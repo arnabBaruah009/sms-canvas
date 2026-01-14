@@ -1,0 +1,153 @@
+"use client";
+
+import { Input_Auth } from "@/app/auth/components/auth-input/input";
+import { PrimaryButton } from "@/components/buttons/primary-button";
+import { RedirectLink } from "@/app/auth/components/redirect-link/redirect-link";
+import { Heading } from "@/app/auth/components/auth-heading/heading";
+import { useState } from "react";
+import { Register_Input_Type } from "@/app/auth/types/register.types";
+import {
+  checkValidation,
+  passwordValidate,
+} from "@/lib/utils/validation.utils";
+import { useRegisterMutation } from "@/lib/apis/auth.api";
+import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setToken } from "@/lib/redux/slice/auth.slice";
+
+export default function Register() {
+  const dispatch = useDispatch();
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isConfirmPasswordVisible, setConfirmPasswordIsVisible] =
+    useState<boolean>(false);
+  const [registerInputs, setRegisterInputs] = useState<Register_Input_Type>({
+    email: "",
+    password: "",
+    confirm_password: "",
+  });
+  const [register, { isLoading, isSuccess }] = useRegisterMutation();
+  const [isRegisterClicked, setIsRegisterClicked] = useState<boolean>(false);
+
+  const checkValidation_Register = (name: keyof Register_Input_Type) => {
+    return checkValidation(name, registerInputs, "register");
+  };
+
+  const onchange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRegisterInputs({ ...registerInputs, [e.target.name]: e.target.value });
+  };
+
+  const handleRegister = async () => {
+    setIsRegisterClicked(true);
+
+    // Check for validation errors
+    if (
+      checkValidation_Register("email") ||
+      checkValidation_Register("password") ||
+      checkValidation_Register("confirm_password") ||
+      registerInputs.email === "" ||
+      registerInputs.password === "" ||
+      registerInputs.confirm_password === ""
+    ) {
+      return;
+    }
+
+    try {
+      const response = await register({ user: registerInputs });
+
+      if ("error" in response) {
+        const message =
+          (response.error as any)?.data?.message ?? "Server not reachable!";
+        toast.error(message);
+      } else if ("data" in response) {
+        const accessToken = response.data.accessToken;
+        dispatch(setToken(accessToken));
+        toast.success("Email sent!");
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+    }
+  };
+
+  return (
+    <div className="w-full md:w-1/2 flex flex-col items-center p-6">
+      <Heading title="Register with Nirvalaaa" />
+      <div className="my-10 mt-16 flex flex-col justify-between gap-4 w-full sm:w-4/5">
+        <Input_Auth
+          type="email"
+          name="email"
+          value={registerInputs.email}
+          onChange={onchange}
+          isInvalid={
+            checkValidation_Register("email") ||
+            (isRegisterClicked && registerInputs.email === "")
+          }
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === "Enter") handleRegister();
+          }}
+          errorMessage={
+            isRegisterClicked && registerInputs.email === ""
+              ? "Email is required"
+              : "Invalid email"
+          }
+          placeholder="Enter your email"
+        />
+
+        <Input_Auth
+          type="password"
+          name="password"
+          value={registerInputs.password}
+          onChange={onchange}
+          isInvalid={
+            checkValidation_Register("password") ||
+            (isRegisterClicked && registerInputs.password === "")
+          }
+          isVisible={isVisible}
+          setIsVisible={setIsVisible}
+          placeholder="Enter your password"
+          errorMessage={
+            isRegisterClicked && registerInputs.password === ""
+              ? "Password is required"
+              : passwordValidate(registerInputs.password)
+          }
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === "Enter") handleRegister();
+          }}
+        />
+
+        <Input_Auth
+          type="password"
+          name="confirm_password"
+          value={registerInputs.confirm_password}
+          onChange={onchange}
+          isInvalid={
+            checkValidation_Register("confirm_password") ||
+            (isRegisterClicked && registerInputs.confirm_password === "")
+          }
+          isVisible={isConfirmPasswordVisible}
+          setIsVisible={setConfirmPasswordIsVisible}
+          placeholder="Confirm password"
+          errorMessage={
+            isRegisterClicked && registerInputs.confirm_password === ""
+              ? "Confirm password is required"
+              : "Password do not match"
+          }
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === "Enter") handleRegister();
+          }}
+        />
+      </div>
+
+      <PrimaryButton
+        title="Register"
+        onClick={handleRegister}
+        loading={isLoading}
+      />
+
+      <RedirectLink
+        message="Already a member?"
+        redirectTo="Login here"
+        path="/auth/login"
+      />
+    </div>
+  );
+}
