@@ -1,7 +1,7 @@
 "use client";
 
 import { Input_Auth } from "@/app/auth/components/auth-input/input";
-import { PrimaryButton } from "@/components/common/primary-button";
+import { PrimaryButton } from "@/components/buttons/primary-button";
 import { RedirectLink } from "@/app/auth/components/redirect-link/redirect-link";
 import { Heading } from "@/app/auth/components/auth-heading/heading";
 import { useState } from "react";
@@ -9,8 +9,8 @@ import {
   checkValidation,
   passwordValidate,
 } from "@/lib/utils/validation.utils";
-import { ForgotPassword_Input_Type } from "@/lib/types/auth.types";
-import { useForgotMutation } from "@/lib/utils/api/auth.api";
+import { ForgotPassword_Input_Type } from "@/app/auth/types/forgot-password.types";
+import { useForgotMutation } from "@/lib/apis/auth.api";
 import { toast } from "react-hot-toast";
 import { ForgotEmailSent } from "@/app/auth/components/forgot-email-sent/forgot-email-sent";
 
@@ -75,7 +75,7 @@ export default function Forgot_Password() {
       {isSuccess ? (
         <ForgotEmailSent email={forgotPasswordInputs.email} />
       ) : (
-        <div className="w-full md:w-1/2 flex flex-col items-center p-6">
+        <div className="w-full md:w-3/4 flex flex-col items-center p-6">
           <Heading title="Forgot Your Password?" />
           <div className="my-10 mt-16 box-border flex flex-col justify-between gap-4 w-full sm:w-4/5">
             <Input_Auth

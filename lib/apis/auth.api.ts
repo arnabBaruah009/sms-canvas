@@ -4,6 +4,7 @@ import {
   RegisterResponse,
 } from "@/app/auth/types/register.types";
 import { apiSetup } from "./api-setup";
+import { ForgotRequest } from "@/app/auth/types/forgot-password.types";
 
 export const authApi = apiSetup.injectEndpoints({
   endpoints: (builder) => ({
@@ -40,13 +41,13 @@ export const authApi = apiSetup.injectEndpoints({
     //     method: "GET",
     //   }),
     // }),
-    // forgot: builder.mutation<void, ForgotRequest>({
-    //   query: (data) => ({
-    //     url: "auth/forgot",
-    //     method: "POST",
-    //     body: data,
-    //   }),
-    // }),
+    forgot: builder.mutation<void, ForgotRequest>({
+      query: (data) => ({
+        url: "auth/forgot",
+        method: "POST",
+        body: data,
+      }),
+    }),
     // resend: builder.mutation<void, void>({
     //   query: () => ({
     //     url: "auth/resend-email-verification",
@@ -72,10 +73,10 @@ export const authApi = apiSetup.injectEndpoints({
 
 export const {
   useRegisterMutation,
-    useLoginMutation,
+  useLoginMutation,
   //   useResetMutation,
   //   useLogoutMutation,
-  //   useForgotMutation,
+  useForgotMutation,
   //   useResendMutation,
   //   useGenerateOtpMutation,
   //   useDeleteAccountMutation,

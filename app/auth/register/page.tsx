@@ -69,7 +69,7 @@ export default function Register() {
   };
 
   return (
-    <div className="w-full lg:w-3/4 flex flex-col items-center p-6">
+    <div className="w-full md:w-3/4 flex flex-col items-center p-6">
       <Heading
         title="Register"
         subtitle="Enter your credentials to access the platform"
