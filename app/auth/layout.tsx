@@ -38,9 +38,9 @@ export default function AuthLayout({
   ];
 
   return (
-    <div className="w-screen h-screen bg-[#fafafa] flex relative border-t-4 border-b-4 border-r-4 border-[#1e3a8a]">
+    <div className="w-screen h-screen bg-[#fafafa] flex relative border-t-4 border-b-4 border-r-4 border-[#1e3a8a] font-outfit">
       {/* Left Section - Branding & Features */}
-      <div className="hidden md:flex lg:w-3/5 h-full bg-[#f4f1e9] px-12 py-10 flex-col relative font-outfit tracking-wide">
+      <div className="hidden md:flex lg:w-3/5 h-full bg-[#f4f1e9] px-12 py-10 flex-col relative tracking-wide">
         {/* Main Content - Centered */}
         <div className="flex-1 flex flex-col justify-center space-y-8">
           {/* Headings */}

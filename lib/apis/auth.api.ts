@@ -1,8 +1,9 @@
-import { apiSetup } from "./api-setup";
+import { LoginRequest, LoginResponse } from "@/app/auth/types/login.types";
 import {
   RegisterRequest,
   RegisterResponse,
 } from "@/app/auth/types/register.types";
+import { apiSetup } from "./api-setup";
 
 export const authApi = apiSetup.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,19 +14,19 @@ export const authApi = apiSetup.injectEndpoints({
         body: data,
       }),
     }),
-    // login: builder.mutation<LoginResponse, LoginRequest>({
-    //   query: (data) => ({
-    //     url: "auth/login",
-    //     method: "POST",
-    //     body: data,
-    //   }),
-    //   async onQueryStarted(_, { dispatch, queryFulfilled }) {
-    //     try {
-    //       await queryFulfilled;
-    //       dispatch(apiSetup.util.resetApiState());
-    //     } catch {}
-    //   },
-    // }),
+    login: builder.mutation<LoginResponse, LoginRequest>({
+      query: (data) => ({
+        url: "auth/login",
+        method: "POST",
+        body: data,
+      }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(apiSetup.util.resetApiState());
+        } catch {}
+      },
+    }),
     // reset: builder.mutation<void, ResetRequest>({
     //   query: (data) => ({
     //     url: "auth/reset",
@@ -71,7 +72,7 @@ export const authApi = apiSetup.injectEndpoints({
 
 export const {
   useRegisterMutation,
-  //   useLoginMutation,
+    useLoginMutation,
   //   useResetMutation,
   //   useLogoutMutation,
   //   useForgotMutation,

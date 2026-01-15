@@ -70,7 +70,10 @@ export default function Register() {
 
   return (
     <div className="w-full lg:w-3/4 flex flex-col items-center p-6">
-      <Heading title="Register" />
+      <Heading
+        title="Register"
+        subtitle="Enter your credentials to access the platform"
+      />
       <div className="my-10 mt-16 flex flex-col justify-between gap-4 w-full sm:w-4/5">
         <Input_Auth
           type="email"

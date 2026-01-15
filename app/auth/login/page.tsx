@@ -5,29 +5,25 @@ import { Input_Auth } from "@/app/auth/components/auth-input/input";
 import { RedirectLink } from "@/app/auth/components/redirect-link/redirect-link";
 import { Heading } from "@/app/auth/components/auth-heading/heading";
 import { useState, useEffect } from "react";
-import { Login_Input_Type } from "@/lib/types/auth.types";
+import { Login_Input_Type } from "@/app/auth/types/login.types";
 import { checkValidation } from "@/lib/utils/validation.utils";
-import { useLoginMutation } from "@/lib/utils/api/auth.api";
+import { useLoginMutation } from "@/lib/apis/auth.api";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { createSession } from "@/lib/utils/sessions";
+import { createSession } from "@/lib/utils/sessions.utils";
 import { useDispatch } from "react-redux";
-import { setToken } from "@/lib/utils/redux/slice/auth.slice";
-import { VerifyEmailSent } from "@/components/common/verification-email/verify-email-sent";
-import { PrimaryButton } from "@/components/common/primary-button";
-import { useMediaQuery } from "@/lib/utils/hooks/useMediaQuery";
+import { setToken } from "@/lib/redux/slice/auth.slice";
+import { PrimaryButton } from "@/components/buttons/primary-button";
 
 export default function Login() {
   const router = useRouter();
   const dispatch = useDispatch();
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [isEmailVerifiedMsg, setIsEmailVerifiedMsg] = useState<boolean>(false);
   const [loginInputs, setLoginInputs] = useState<Login_Input_Type>({
     email: "",
     password: "",
   });
   const [login, { isLoading }] = useLoginMutation();
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const [isLoginClicked, setIsLoginClicked] = useState<boolean>(false);
 
   const checkValidation_Login = (name: keyof Login_Input_Type) => {
@@ -70,16 +66,10 @@ export default function Login() {
           createSession(accessToken);
           toast.success(`Welcome`);
           if ((first_name || last_name) && contact_number) {
-            if (isMobile) {
-              router.push("/dashboard/home");
-            } else {
-              router.push("/dashboard/settings/profile");
-            }
+            router.push("/dashboard/home");
           } else {
             router.push("/onboarding/profile");
           }
-        } else {
-          setIsEmailVerifiedMsg(true);
         }
       }
     } catch (error) {
@@ -88,72 +78,62 @@ export default function Login() {
   };
 
   return (
-    <>
-      {isEmailVerifiedMsg ? (
-        <VerifyEmailSent fullWidth={false} />
-      ) : (
-        <div className="w-full lg:w-1/2 flex flex-col items-center p-6">
-          <Heading title="Welcome back!" subtitle="Log in to your account" />
-          <div className="my-10 mt-16 flex flex-col justify-between gap-4 w-full sm:w-4/5">
-            <Input_Auth
-              type="email"
-              name="email"
-              value={loginInputs.email}
-              onChange={onchange}
-              isInvalid={
-                checkValidation_Login("email") ||
-                (isLoginClicked && loginInputs.email === "")
-              }
-              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                if (e.key === "Enter") handleLogin();
-              }}
-              errorMessage={
-                isLoginClicked && loginInputs.email === ""
-                  ? "Email is required"
-                  : "Invalid email"
-              }
-              placeholder="Enter your email"
-            />
+    <div className="w-full lg:w-3/4 flex flex-col items-center p-6">
+      <Heading title="Welcome back!" subtitle="Log in to your account" />
+      <div className="my-10 mt-16 flex flex-col justify-between gap-4 w-full sm:w-4/5">
+        <Input_Auth
+          type="email"
+          name="email"
+          value={loginInputs.email}
+          onChange={onchange}
+          isInvalid={
+            checkValidation_Login("email") ||
+            (isLoginClicked && loginInputs.email === "")
+          }
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === "Enter") handleLogin();
+          }}
+          errorMessage={
+            isLoginClicked && loginInputs.email === ""
+              ? "Email is required"
+              : "Invalid email"
+          }
+          placeholder="Enter your email"
+        />
 
-            <Input_Auth
-              type="password"
-              name="password"
-              value={loginInputs.password}
-              onChange={onchange}
-              isInvalid={isLoginClicked && loginInputs.password === ""}
-              isVisible={isVisible}
-              setIsVisible={setIsVisible}
-              placeholder="Enter your password"
-              errorMessage={
-                isLoginClicked && loginInputs.password === ""
-                  ? "Password is required"
-                  : ""
-              }
-              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                if (e.key === "Enter") handleLogin();
-              }}
-            />
-          </div>
+        <Input_Auth
+          type="password"
+          name="password"
+          value={loginInputs.password}
+          onChange={onchange}
+          isInvalid={isLoginClicked && loginInputs.password === ""}
+          isVisible={isVisible}
+          setIsVisible={setIsVisible}
+          placeholder="Enter your password"
+          errorMessage={
+            isLoginClicked && loginInputs.password === ""
+              ? "Password is required"
+              : ""
+          }
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === "Enter") handleLogin();
+          }}
+        />
+      </div>
 
-          <PrimaryButton
-            title="Login"
-            onClick={handleLogin}
-            loading={isLoading}
-          />
+      <PrimaryButton title="Login" onClick={handleLogin} loading={isLoading} />
 
-          <Link href="/auth/forgot-password">
-            <p className="font-quicksand font-medium text-sm hover:underline underline-offset-4 mt-2">
-              Forgot password?
-            </p>
-          </Link>
+      <Link href="/auth/forgot-password">
+        <p className="font-quicksand font-medium text-sm hover:underline underline-offset-4 mt-2">
+          Forgot password?
+        </p>
+      </Link>
 
-          <RedirectLink
-            message="Don't have an account yet?"
-            redirectTo="Register here"
-            path="/auth/register"
-          />
-        </div>
-      )}
-    </>
+      <RedirectLink
+        message="Don't have an account yet?"
+        redirectTo="Register here"
+        path="/auth/register"
+      />
+    </div>
   );
 }
