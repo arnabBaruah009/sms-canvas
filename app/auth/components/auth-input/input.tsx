@@ -1,4 +1,4 @@
-import { Input } from "@nextui-org/react";
+import { Input } from "antd";
 import { MailIcon } from "@/components/icons/mail-icon";
 import PasswordToggle from "@/components/password-toggle/password-toggle";
 import { InputProps_Auth } from "@/lib/types/input.types";
@@ -18,7 +18,7 @@ export const Input_Auth = ({
   endContent,
   disabled,
 }: InputProps_Auth) => {
-  const renderEndContent = () => {
+  const renderSuffix = () => {
     if (type === "password" && isVisible !== undefined && setIsVisible) {
       return (
         <PasswordToggle
@@ -34,26 +34,42 @@ export const Input_Auth = ({
     return endContent;
   };
 
+  const handlePressEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (onKeyDown) {
+      onKeyDown(e);
+    }
+  };
+
+  const inputProps = {
+    name,
+    value,
+    onChange,
+    placeholder,
+    className,
+    disabled,
+    status: isInvalid ? ("error" as const) : undefined,
+    suffix: renderSuffix(),
+    onPressEnter: handlePressEnter,
+    variant: "underlined" as const,
+  };
+
+  if (type === "password" && isVisible !== undefined && setIsVisible) {
+    return (
+      <div className="w-full">
+        <Input {...inputProps} type={isVisible ? "text" : "password"} />
+        {errorMessage && isInvalid && (
+          <div className="text-red-500 text-sm mt-1">{errorMessage}</div>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <Input
-      type={
-        type === "password" && isVisible !== undefined
-          ? isVisible
-            ? "text"
-            : "password"
-          : type
-      }
-      name={name}
-      value={value}
-      onChange={onChange}
-      isInvalid={isInvalid}
-      onKeyDown={onKeyDown}
-      placeholder={placeholder}
-      errorMessage={errorMessage}
-      className={className}
-      endContent={renderEndContent()}
-      variant="underlined"
-      disabled={disabled}
-    />
+    <div className="w-full">
+      <Input {...inputProps} type={type} />
+      {errorMessage && isInvalid && (
+        <div className="text-red-500 text-sm mt-1">{errorMessage}</div>
+      )}
+    </div>
   );
 };
