@@ -15,7 +15,7 @@ export const RedirectLink = ({
     <p className="mt-4 font-thin font-quicksand text-xs sm:text-sm">
       {message}{" "}
       <Link href={path}>
-        <span className="text-green-700 font-semibold underline underline-offset-4">
+        <span className="text-blue-700 font-semibold underline underline-offset-4">
           {redirectTo}
         </span>
       </Link>
