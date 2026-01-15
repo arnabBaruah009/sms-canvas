@@ -40,12 +40,12 @@ export default function AuthLayout({
   return (
     <div className="w-screen h-screen bg-[#fafafa] flex relative border-t-4 border-b-4 border-r-4 border-[#1e3a8a]">
       {/* Left Section - Branding & Features */}
-      <div className="hidden lg:flex lg:w-3/5 h-full bg-[#f4f1e9] px-12 py-10 flex-col relative">
+      <div className="hidden md:flex lg:w-3/5 h-full bg-[#f4f1e9] px-12 py-10 flex-col relative font-outfit tracking-wide">
         {/* Main Content - Centered */}
         <div className="flex-1 flex flex-col justify-center space-y-8">
           {/* Headings */}
           <div className="space-y-4">
-            <h2 className="text-4xl font-bold text-gray-900 leading-tight">
+            <h2 className="text-5xl font-bold text-gray-900 leading-tight">
               Your School, Powered by AI
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed max-w-lg">
