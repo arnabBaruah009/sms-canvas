@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { apiSetup } from "@/lib/apis/api-setup";
 import authSlice from "@/lib/redux/slice/auth.slice";
+import sidebarSlice from "@/lib/redux/slice/sidebar.slice";
 
 // Configure the store
 export const store = configureStore({
   reducer: {
     [apiSetup.reducerPath]: apiSetup.reducer,
     authSlice,
+    sidebarSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSetup.middleware),

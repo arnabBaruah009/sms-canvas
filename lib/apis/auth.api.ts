@@ -35,12 +35,12 @@ export const authApi = apiSetup.injectEndpoints({
     //     body: data,
     //   }),
     // }),
-    // logout: builder.mutation<void, void>({
-    //   query: () => ({
-    //     url: "auth/logout",
-    //     method: "GET",
-    //   }),
-    // }),
+    logout: builder.mutation<void, void>({
+      query: () => ({
+        url: "auth/logout",
+        method: "GET",
+      }),
+    }),
     forgot: builder.mutation<void, ForgotRequest>({
       query: (data) => ({
         url: "auth/forgot",
@@ -75,7 +75,7 @@ export const {
   useRegisterMutation,
   useLoginMutation,
   //   useResetMutation,
-  //   useLogoutMutation,
+  useLogoutMutation,
   useForgotMutation,
   //   useResendMutation,
   //   useGenerateOtpMutation,

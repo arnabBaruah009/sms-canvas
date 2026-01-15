@@ -35,6 +35,8 @@ export default function Login() {
   };
 
   const handleLogin = async () => {
+    router.push("/dashboard/home");
+    return; // TODO: Remove this after testing
     setIsLoginClicked(true);
 
     if (
