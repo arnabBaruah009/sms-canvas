@@ -1,62 +1,103 @@
 "use client";
 
-import Link from "next/link";
-import { Image } from "antd";
-import { Copyright } from "lucide-react";
 import { Suspense } from "react";
+import {
+  Brain,
+  BarChart3,
+  Sparkles,
+  Target,
+  AlertTriangle,
+} from "lucide-react";
 
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="w-screen h-screen bg-gradient-to-t md:bg-gradient-to-r from-[#cbd7b7] to-white">
-      <div className="w-full h-full grid place-items-center md:flex">
-        <div className="md:w-2/5 lg:w-2/6 h-full px-6 py-6 hidden md:flex flex-col items-center bg-gradient-to-b from-[#19433B] via-[#3C6B5F] to-[#5EA292]">
-          <div className="w-full">
-            <div className="flex gap-4 items-center max-w-max">
-              <Image
-                src="/new_nirvala_logo.png"
-                alt="nirvala-logo"
-                preview={false}
-                height={40}
-                width={40}
-                className="rounded-lg"
-              />
+  const features = [
+    {
+      icon: Brain,
+      text: "Predictive Student Analytics",
+    },
+    {
+      icon: BarChart3,
+      text: "Real-Time Performance Insights",
+    },
+    {
+      icon: Sparkles,
+      text: "AI-Powered Reports",
+    },
+    {
+      icon: Target,
+      text: "Personalized Learning Paths",
+    },
+    {
+      icon: AlertTriangle,
+      text: "Early Risk Detection",
+    },
+  ];
 
-              <p className="md:text-2xl lg:text-3xl text-transparent bg-clip-text bg-logo-gradient tracking-wide font-Parkinsans">
-                nirvala
-              </p>
-            </div>
-          </div>
-          <div className="w-full flex items-center justify-center grow">
-            <Image
-              src="/device_mockup_2.png"
-              alt="app-preview"
-              preview={false}
-              width="100%"
-              className=""
-            />
-          </div>
-          <div className="w-full">
-            <p className="w-full justify-center flex items-center gap-x-2 font-DMSans text-sm text-[#CBD7B7]">
-              <Copyright className="w-4 h-4" /> 2025 Nirvala Technologies
-              Private Limited.
+  return (
+    <div className="w-screen h-screen bg-[#fafafa] flex relative border-t-4 border-b-4 border-r-4 border-[#1e3a8a]">
+      {/* Left Section - Branding & Features */}
+      <div className="hidden lg:flex lg:w-3/5 h-full bg-[#f4f1e9] px-12 py-10 flex-col relative">
+        {/* Main Content - Centered */}
+        <div className="flex-1 flex flex-col justify-center space-y-8">
+          {/* Headings */}
+          <div className="space-y-4">
+            <h2 className="text-4xl font-bold text-gray-900 leading-tight">
+              Your School, Powered by AI
+            </h2>
+            <p className="text-lg text-gray-600 leading-relaxed max-w-lg">
+              Automated attendance, predictive performance insights, and
+              personalized learning — all in one system.
             </p>
           </div>
+
+          {/* Floating Feature Pills */}
+          <div className="relative mt-12 min-h-[300px]">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              // Position pills in a more natural, floating arrangement
+              const positions = [
+                { top: "0%", left: "0%" },
+                { top: "20%", left: "15%" },
+                { top: "40%", left: "5%" },
+                { top: "60%", left: "20%" },
+                { top: "80%", left: "10%" },
+              ];
+              return (
+                <div
+                  key={index}
+                  className="absolute inline-flex items-center gap-3 bg-[#1e3a8a] text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  style={{
+                    top: positions[index].top,
+                    left: positions[index].left,
+                  }}
+                >
+                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <span className="text-sm font-semibold whitespace-nowrap">
+                    {feature.text}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
-        <div className="w-4/5 md:w-3/5 lg:w-4/6 flex flex-col items-center justify-center">
-          <Image
-            src="/new_nirvala_logo.png"
-            alt="nirvala-logo"
-            preview={false}
-            height={70}
-            width={70}
-            className="rounded-lg"
-          />
-          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+
+        {/* Decorative Icons - Bottom */}
+        <div className="flex w-full gap-6 items-center justify-around pb-4">
+          {[Brain, BarChart3, Target, AlertTriangle, Sparkles].map(
+            (Icon, index) => (
+              <Icon key={index} className="w-8 h-8 text-[#1e3a8a] opacity-60" />
+            )
+          )}
         </div>
+      </div>
+
+      {/* Right Section - Auth Form */}
+      <div className="w-full lg:w-1/2 h-full bg-[#fafafa] flex flex-col items-center justify-center px-6 py-8">
+        <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
       </div>
     </div>
   );
