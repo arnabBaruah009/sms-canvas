@@ -1,4 +1,4 @@
-import { House } from "lucide-react";
+import { House, Settings } from "lucide-react";
 
 export interface MenuItem {
   icon?: React.ReactNode;
@@ -18,6 +18,11 @@ export const Menu: Menu = {
       icon: <House className="w-5 h-5" />,
       text: "Home",
       page: "/dashboard/home",
+    },
+    {
+      icon: <Settings className="w-5 h-5" />,
+      text: "Settings",
+      page: "/dashboard/settings/school-details",
     },
   ],
 };
