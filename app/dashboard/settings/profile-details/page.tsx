@@ -20,6 +20,7 @@ import {
 import { toast } from "react-hot-toast";
 import { isValidEmail } from "@/lib/utils/validation.utils";
 import dayjs from "dayjs";
+import { UploadImage } from "@/components/upload-image/upload-image";
 
 const { Option } = Select;
 
@@ -134,6 +135,18 @@ export default function ProfileDetailsPage() {
             }}
             className="space-y-4"
           >
+            <Form.Item
+              name="avatar_url"
+              label="Profile Picture"
+              valuePropName="value"
+            >
+              <UploadImage
+                onChange={(url) => {
+                  form.setFieldValue("avatar_url", url);
+                }}
+              />
+            </Form.Item>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Form.Item
                 name="name"

@@ -12,6 +12,7 @@ import { Input, Select, Form, Card, Spin, Empty } from "antd";
 import { Building2, Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { isValidEmail } from "@/lib/utils/validation.utils";
+import { UploadImage } from "@/components/upload-image/upload-image";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -137,6 +138,18 @@ export default function SchoolDetailsPage() {
             onFinish={handleAddSchool}
             className="space-y-4"
           >
+            <Form.Item
+              name="logo_url"
+              label="School Logo"
+              valuePropName="value"
+            >
+              <UploadImage
+                onChange={(url) => {
+                  form.setFieldValue("logo_url", url);
+                }}
+              />
+            </Form.Item>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Form.Item
                 name="name"
