@@ -22,7 +22,7 @@ export const Menu: Menu = {
     {
       icon: <Settings className="w-5 h-5" />,
       text: "Settings",
-      page: "/dashboard/settings/school-details",
+      page: "/dashboard/settings/profile-details",
     },
   ],
 };

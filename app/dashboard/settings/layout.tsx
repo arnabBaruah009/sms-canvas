@@ -22,6 +22,10 @@ export default function SettingsPageLayout({
         pathname={pathname}
         tabs={[
           {
+            key: `/dashboard/settings/profile-details`,
+            label: "Profile Details",
+          },
+          {
             key: `/dashboard/settings/school-details`,
             label: "School Details",
           },
