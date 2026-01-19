@@ -14,10 +14,7 @@ export interface LoginResponse {
   data: {
     accessToken: string;
     isEmailVerified: boolean;
-    teamId: string | null;
-    first_name: string;
-    last_name: string;
-    contact_number: string;
+    schoolId: string | null;
   };
   error: any;
 }

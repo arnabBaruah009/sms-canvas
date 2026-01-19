@@ -35,8 +35,6 @@ export default function Login() {
   };
 
   const handleLogin = async () => {
-    router.push("/dashboard/home");
-    return; // TODO: Remove this after testing
     setIsLoginClicked(true);
 
     if (
@@ -58,20 +56,19 @@ export default function Login() {
         const {
           accessToken,
           isEmailVerified,
-          teamId,
-          first_name,
-          last_name,
-          contact_number,
+          schoolId,
         } = response.data.data;
         if (isEmailVerified) {
           dispatch(setToken(accessToken));
           createSession(accessToken);
           toast.success(`Welcome`);
-          if ((first_name || last_name) && contact_number) {
+          if (Boolean(schoolId)) {
             router.push("/dashboard/home");
           } else {
-            router.push("/onboarding/profile");
+            router.push("/dashboard/settings/school-details");
           }
+        } else {
+          toast.error("Please verify your email");
         }
       }
     } catch (error) {
