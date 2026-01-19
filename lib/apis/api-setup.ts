@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/lib/redux/store";
+import { SESSION_COOKIE_NAME } from "../utils/sessions.utils";
 
 export enum HttpStatus {
   UNAUTHORIZED = 401,
@@ -19,7 +20,7 @@ const errorHandlers: ErrorHandler[] = [
       if (typeof window !== "undefined") {
         // Clear the invalid session cookie before redirecting
         document.cookie =
-          "nirvala-session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          `${SESSION_COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
         window.location.href = "/auth/login";
       }
     },

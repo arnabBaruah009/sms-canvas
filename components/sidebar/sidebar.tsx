@@ -89,7 +89,7 @@ export function Sidebar() {
                 expanded ? "w-max" : "w-0"
               }`}
             >
-              nirvala
+              S-M-S
             </p>
           </div>
 

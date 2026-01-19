@@ -1,11 +1,12 @@
 import Cookies from "js-cookie";
 
 export const STORAGE_PROFILE_DATA = "sms-canvas-profileData";
+export const SESSION_COOKIE_NAME = "sms-canvas-session";
 
 export function createSession(token: string) {
   const expiresAt = 2; // expires in 2 days
 
-  Cookies.set("nirvala-session", token, {
+  Cookies.set(SESSION_COOKIE_NAME, token, {
     secure: true,
     expires: expiresAt, // in days
     sameSite: "lax",
@@ -14,7 +15,7 @@ export function createSession(token: string) {
 }
 
 export function deleteSession() {
-  Cookies.remove("nirvala-session", { path: "/" });
+  Cookies.remove(SESSION_COOKIE_NAME, { path: "/" });
   localStorage.removeItem(STORAGE_PROFILE_DATA);
 }
 
