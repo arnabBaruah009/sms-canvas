@@ -12,6 +12,7 @@ export const schoolApi = apiSetup.injectEndpoints({
         url: "api/v1/school",
         method: "GET",
       }),
+      providesTags: ["School"],
     }),
     createSchool: builder.mutation<CreateSchoolResponse, CreateSchoolRequest>({
       query: (data) => ({
@@ -19,6 +20,7 @@ export const schoolApi = apiSetup.injectEndpoints({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["School"],
     }),
     updateSchool: builder.mutation<
       CreateSchoolResponse,
@@ -29,6 +31,7 @@ export const schoolApi = apiSetup.injectEndpoints({
         method: "PUT",
         body: data,
       }),
+      invalidatesTags: ["School"],
     }),
   }),
 });

@@ -6,7 +6,7 @@ import {
   useCreateSchoolMutation,
   useUpdateSchoolMutation,
 } from "@/lib/apis/school.api";
-import { SchoolDetails, SchoolType, SchoolBoard } from "./types/school.types";
+import { SchoolDetails, SchoolLevel, SchoolBoard, SchoolType } from "./types/school.types";
 import { PrimaryButton } from "@/components/buttons/primary-button";
 import { Input, Select, Form, Card, Spin, Empty } from "antd";
 import { Building2, Plus } from "lucide-react";
@@ -17,7 +17,7 @@ import { UploadImage } from "@/components/upload-image/upload-image";
 const { Option } = Select;
 const { TextArea } = Input;
 
-const schoolTypes: SchoolType[] = [
+const schoolLevels: SchoolLevel[] = [
   "Primary",
   "Secondary",
   "Higher Secondary",
@@ -30,6 +30,7 @@ const schoolBoards: SchoolBoard[] = [
   "State Board",
   "Other",
 ];
+const schoolTypes: SchoolType[] = ["Government", "Private"];
 
 export default function SchoolDetailsPage() {
   const [form] = Form.useForm();
@@ -45,9 +46,9 @@ export default function SchoolDetailsPage() {
   const handleAddSchool = async (values: SchoolDetails) => {
     try {
       let response;
-      if (isEditing && school?.id) {
+      if (isEditing && school?._id) {
         response = await updateSchool({
-          id: school.id,
+          id: school._id,
           school: values,
         }).unwrap();
       } else {
@@ -63,7 +64,6 @@ export default function SchoolDetailsPage() {
         setIsAddingSchool(false);
         setIsEditing(false);
         form.resetFields();
-        refetch();
       }
     } catch (error: any) {
       const message = error?.data?.message ?? "Failed to save school details";
@@ -236,14 +236,14 @@ export default function SchoolDetailsPage() {
               </Form.Item>
 
               <Form.Item
-                name="type"
-                label="School Type"
-                rules={[{ required: true, message: "School type is required" }]}
+                name="level"
+                label="School Level"
+                rules={[{ required: true, message: "School level is required" }]}
               >
-                <Select placeholder="Select school type" size="large">
-                  {schoolTypes.map((type) => (
-                    <Option key={type} value={type}>
-                      {type}
+                <Select placeholder="Select school level" size="large">
+                  {schoolLevels.map((level) => (
+                    <Option key={level} value={level}>
+                      {level}
                     </Option>
                   ))}
                 </Select>
@@ -261,6 +261,42 @@ export default function SchoolDetailsPage() {
                     </Option>
                   ))}
                 </Select>
+              </Form.Item>
+            </div>
+
+            <Form.Item
+              name="type"
+              label="School Type"
+              rules={[{ required: true, message: "School type is required" }]}
+            >
+              <Select placeholder="Select school type" size="large">
+                {schoolTypes.map((type) => (
+                  <Option key={type} value={type}>
+                    {type}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Form.Item
+                name="primary_contact_name"
+                label="Primary Contact Person Name"
+              >
+                <Input placeholder="Enter primary contact name" size="large" />
+              </Form.Item>
+
+              <Form.Item
+                name="primary_contact_number"
+                label="Primary Contact Number"
+                rules={[
+                  {
+                    pattern: /^[0-9]{10}$/,
+                    message: "Please enter a valid 10-digit phone number",
+                  },
+                ]}
+              >
+                <Input placeholder="Enter primary contact number" size="large" />
               </Form.Item>
             </div>
 
@@ -342,9 +378,9 @@ export default function SchoolDetailsPage() {
 
             <div>
               <label className="text-sm font-medium text-gray-500 mb-1 block">
-                School Type
+                School Level
               </label>
-              <p className="text-base text-gray-900">{school.type}</p>
+              <p className="text-base text-gray-900">{school.level}</p>
             </div>
 
             <div>
@@ -359,6 +395,27 @@ export default function SchoolDetailsPage() {
                 Pincode
               </label>
               <p className="text-base text-gray-900">{school.pincode}</p>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-gray-500 mb-1 block">
+                School Type
+              </label>
+              <p className="text-base text-gray-900">{school.type}</p>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-gray-500 mb-1 block">
+                Primary Contact Person
+              </label>
+              <p className="text-base text-gray-900">{school.primary_contact_name}</p>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-gray-500 mb-1 block">
+                Primary Contact Number
+              </label>
+              <p className="text-base text-gray-900">{school.primary_contact_number}</p>
             </div>
           </div>
 

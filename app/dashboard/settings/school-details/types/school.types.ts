@@ -1,12 +1,13 @@
-export type SchoolType =
+export type SchoolLevel =
   | "Primary"
   | "Secondary"
   | "Higher Secondary"
   | "Composite";
 export type SchoolBoard = "CBSE" | "HSLC" | "ICSE" | "State Board" | "Other";
+export type SchoolType = "Government" | "Private";
 
 export interface SchoolDetails {
-  id?: string;
+  _id?: string;
   name: string;
   phone_number: string;
   email: string;
@@ -15,8 +16,11 @@ export interface SchoolDetails {
   state: string;
   country: string;
   pincode: string;
-  type: SchoolType;
+  level: SchoolLevel;
   board: SchoolBoard;
+  type: SchoolType;
+  primary_contact_name?: string;
+  primary_contact_number?: string;
   logo_url?: string;
 }
 
