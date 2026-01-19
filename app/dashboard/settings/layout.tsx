@@ -32,7 +32,7 @@ export default function SettingsPageLayout({
         ]}
         handleRouting={(key: string) => router.push(key)}
       />
-      <div className="flex-1 overflow-y-auto scrollbar-hide">{children}</div>
+      <div className="flex-1 overflow-y-auto scrollbar-hide pb-4">{children}</div>
     </div>
   );
 }
