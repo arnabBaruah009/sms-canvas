@@ -119,8 +119,8 @@ export default function SchoolDetailsPage() {
 
   if (isAddingSchool || !school) {
     return (
-      <div className="w-full max-w-4xl mx-auto p-6">
-        <Card className="shadow-sm border border-gray-200">
+      <div className="w-full">
+        <div className="">
           <div className="mb-6">
             <h2 className="text-2xl font-semibold mb-2">
               {isEditing ? "Edit School Details" : "Add School Details"}
@@ -136,25 +136,26 @@ export default function SchoolDetailsPage() {
             form={form}
             layout="vertical"
             onFinish={handleAddSchool}
-            className="space-y-4"
+            className="space-y-2"
           >
-            <Form.Item
-              name="logo_url"
-              label="School Logo"
-              valuePropName="value"
-            >
-              <UploadImage
-                onChange={(url) => {
-                  form.setFieldValue("logo_url", url);
-                }}
-              />
-            </Form.Item>
+            <div className="flex flex-row w-full items-center gap-4">
+              <Form.Item
+                name="logo_url"
+                valuePropName="value"
+              >
+                <UploadImage
+                  onChange={(url) => {
+                    form.setFieldValue("logo_url", url);
+                  }}
+                  listType="picture-circle"
+                />
+              </Form.Item>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Form.Item
                 name="name"
                 label="School Name"
                 rules={[{ required: true, message: "School name is required" }]}
+                className="flex-1"
               >
                 <Input placeholder="Enter school name" size="large" />
               </Form.Item>
@@ -169,22 +170,24 @@ export default function SchoolDetailsPage() {
                     message: "Please enter a valid 10-digit phone number",
                   },
                 ]}
+                className="flex-1"
               >
                 <Input placeholder="Enter phone number" size="large" />
               </Form.Item>
-            </div>
 
-            <Form.Item
-              name="email"
-              label="Email"
-              rules={[{ validator: validateEmail }]}
-            >
-              <Input
-                type="email"
-                placeholder="Enter email address"
-                size="large"
-              />
-            </Form.Item>
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[{ validator: validateEmail }]}
+                className="flex-1"
+              >
+                <Input
+                  type="email"
+                  placeholder="Enter email address"
+                  size="large"
+                />
+              </Form.Item>
+            </div>
 
             <Form.Item
               name="address_line"
@@ -194,7 +197,20 @@ export default function SchoolDetailsPage() {
               <Input placeholder="Enter address" size="large" />
             </Form.Item>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Form.Item
+                name="pincode"
+                label="Pincode"
+                rules={[
+                  { required: true, message: "Pincode is required" },
+                  {
+                    pattern: /^[0-9]{6}$/,
+                    message: "Please enter a valid 6-digit pincode",
+                  },
+                ]}
+              >
+                <Input placeholder="Enter pincode" size="large" />
+              </Form.Item>
               <Form.Item
                 name="city"
                 label="City"
@@ -222,20 +238,6 @@ export default function SchoolDetailsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Form.Item
-                name="pincode"
-                label="Pincode"
-                rules={[
-                  { required: true, message: "Pincode is required" },
-                  {
-                    pattern: /^[0-9]{6}$/,
-                    message: "Please enter a valid 6-digit pincode",
-                  },
-                ]}
-              >
-                <Input placeholder="Enter pincode" size="large" />
-              </Form.Item>
-
-              <Form.Item
                 name="level"
                 label="School Level"
                 rules={[{ required: true, message: "School level is required" }]}
@@ -262,21 +264,21 @@ export default function SchoolDetailsPage() {
                   ))}
                 </Select>
               </Form.Item>
-            </div>
 
-            <Form.Item
-              name="type"
-              label="School Type"
-              rules={[{ required: true, message: "School type is required" }]}
-            >
-              <Select placeholder="Select school type" size="large">
-                {schoolTypes.map((type) => (
-                  <Option key={type} value={type}>
-                    {type}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
+              <Form.Item
+                name="type"
+                label="School Type"
+                rules={[{ required: true, message: "School type is required" }]}
+              >
+                <Select placeholder="Select school type" size="large">
+                  {schoolTypes.map((type) => (
+                    <Option key={type} value={type}>
+                      {type}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Form.Item
@@ -318,21 +320,15 @@ export default function SchoolDetailsPage() {
               />
             </div>
           </Form>
-        </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6">
-      <Card className="shadow-sm border border-gray-200">
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h2 className="text-2xl font-semibold mb-2">School Details</h2>
-            <p className="text-sm text-gray-500">
-              View and manage your school information
-            </p>
-          </div>
+    <div className="w-full">
+      <div className="">
+        <div className="flex justify-end items-start mb-6">
           <PrimaryButton
             title="Edit"
             onClick={() => {
@@ -344,112 +340,112 @@ export default function SchoolDetailsPage() {
         </div>
 
         <div className="space-y-6">
-          {school.logo_url && (
+          {true && (
             <div className="flex justify-center">
               <img
-                src={school.logo_url}
+                src="https://img.freepik.com/premium-vector/university-college-school-crests-logo-emblem-vector-template_441059-1011.jpg?semt=ais_hybrid&w=740&q=80"
                 alt="School Logo"
-                className="w-32 h-32 object-contain rounded-lg border border-gray-200"
+                className="w-32 h-32 object-contain rounded-lg"
               />
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="text-sm font-medium text-gray-500 mb-1 block">
-                School Name
-              </label>
-              <p className="text-base text-gray-900">{school.name}</p>
+          <div className="flex flex-row w-full gap-8">
+            {/* Left Column */}
+            <div className="flex-1 space-y-4">
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  School Name
+                </label>
+                <p className="text-sm font-medium text-gray-500">{school.name}</p>
+              </div>
+
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  Phone Number
+                </label>
+                <p className="text-sm font-medium text-gray-500">{school.phone_number}</p>
+              </div>
+
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  Email
+                </label>
+                <p className="text-sm font-medium text-gray-500">{school.email}</p>
+              </div>
+
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  School Level
+                </label>
+                <p className="text-sm font-medium text-gray-500">{school.level}</p>
+              </div>
+
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  Board
+                </label>
+                <p className="text-sm font-medium text-gray-500">{school.board}</p>
+              </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-500 mb-1 block">
-                Phone Number
-              </label>
-              <p className="text-base text-gray-900">{school.phone_number}</p>
-            </div>
+            {/* Vertical Separator */}
+            <div className="w-px bg-gray-300"></div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-500 mb-1 block">
-                Email
-              </label>
-              <p className="text-base text-gray-900">{school.email}</p>
-            </div>
+            {/* Right Column */}
+            <div className="flex-1 space-y-4">
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  Address
+                </label>
+                <p className="text-sm font-medium text-gray-500">{school.address_line}</p>
+              </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-500 mb-1 block">
-                School Level
-              </label>
-              <p className="text-base text-gray-900">{school.level}</p>
-            </div>
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  City
+                </label>
+                <p className="text-sm font-medium text-gray-500">{school.city}</p>
+              </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-500 mb-1 block">
-                Board
-              </label>
-              <p className="text-base text-gray-900">{school.board}</p>
-            </div>
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  State
+                </label>
+                <p className="text-sm font-medium text-gray-500">{school.state}</p>
+              </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-500 mb-1 block">
-                Pincode
-              </label>
-              <p className="text-base text-gray-900">{school.pincode}</p>
-            </div>
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  Country
+                </label>
+                <p className="text-sm font-medium text-gray-500">{school.country}</p>
+              </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-500 mb-1 block">
-                School Type
-              </label>
-              <p className="text-base text-gray-900">{school.type}</p>
-            </div>
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  Pincode
+                </label>
+                <p className="text-sm font-medium text-gray-500">{school.pincode}</p>
+              </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-500 mb-1 block">
-                Primary Contact Person
-              </label>
-              <p className="text-base text-gray-900">{school.primary_contact_name}</p>
-            </div>
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  Primary Contact Person Name
+                </label>
+                <p className="text-sm font-medium text-gray-500">{school.primary_contact_name || "N/A"}</p>
+              </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-500 mb-1 block">
-                Primary Contact Number
-              </label>
-              <p className="text-base text-gray-900">{school.primary_contact_number}</p>
-            </div>
-          </div>
-
-          <div>
-            <label className="text-sm font-medium text-gray-500 mb-1 block">
-              Address
-            </label>
-            <p className="text-base text-gray-900">{school.address_line}</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label className="text-sm font-medium text-gray-500 mb-1 block">
-                City
-              </label>
-              <p className="text-base text-gray-900">{school.city}</p>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-gray-500 mb-1 block">
-                State
-              </label>
-              <p className="text-base text-gray-900">{school.state}</p>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-gray-500 mb-1 block">
-                Country
-              </label>
-              <p className="text-base text-gray-900">{school.country}</p>
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  Primary Contact Number
+                </label>
+                <p className="text-sm font-medium text-gray-500">{school.primary_contact_number || "-"}</p>
+              </div>
             </div>
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }
