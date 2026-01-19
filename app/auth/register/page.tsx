@@ -12,11 +12,10 @@ import {
 } from "@/lib/utils/validation.utils";
 import { useRegisterMutation } from "@/lib/apis/auth.api";
 import { toast } from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { setToken } from "@/lib/redux/slice/auth.slice";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
-  const dispatch = useDispatch();
+  const router = useRouter();
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isConfirmPasswordVisible, setConfirmPasswordIsVisible] =
     useState<boolean>(false);
@@ -59,9 +58,13 @@ export default function Register() {
           (response.error as any)?.data?.message ?? "Server not reachable!";
         toast.error(message);
       } else if ("data" in response) {
-        const accessToken = response.data.accessToken;
-        dispatch(setToken(accessToken));
-        toast.success("Email sent!");
+        const registrationStatus = response.data.registrationStatus;
+        if (registrationStatus) {
+          toast.success("Registration successful!");
+          router.push("/auth/login");
+        } else {
+          toast.error("Registration failed");
+        }
       }
     } catch (error) {
       toast.error("An unexpected error occurred");

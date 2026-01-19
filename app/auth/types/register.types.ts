@@ -12,7 +12,6 @@ export interface RegisterRequest {
 }
 
 export interface RegisterResponse {
-  accessToken: string;
-  registerationStatus: boolean;
+  registrationStatus: boolean;
   error: any;
 }
