@@ -340,10 +340,10 @@ export default function SchoolDetailsPage() {
         </div>
 
         <div className="space-y-6">
-          {true && (
+          {school.logo_url && (
             <div className="flex justify-center">
               <img
-                src="https://img.freepik.com/premium-vector/university-college-school-crests-logo-emblem-vector-template_441059-1011.jpg?semt=ais_hybrid&w=740&q=80"
+                src={school.logo_url}
                 alt="School Logo"
                 className="w-32 h-32 object-contain rounded-lg"
               />

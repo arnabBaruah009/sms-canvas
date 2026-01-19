@@ -13,6 +13,7 @@ interface UploadImageProps {
   disabled?: boolean;
   maxSizeMB?: number;
   accept?: string;
+  listType?: "picture-card" | "picture-circle";
 }
 
 export function UploadImage({
@@ -21,6 +22,7 @@ export function UploadImage({
   disabled = false,
   maxSizeMB = 5,
   accept = "image/*",
+  listType = "picture-card",
 }: UploadImageProps) {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploadImage, { isLoading }] = useUploadImageMutation();
@@ -101,8 +103,8 @@ export function UploadImage({
 
       const response = await uploadImage(formData).unwrap();
 
-      if (response.data?.url) {
-        onChange?.(response.data.url);
+      if (response.url) {
+        onChange?.(response.url);
         onSuccess?.(response, file as any);
         toast.success("Image uploaded successfully!");
       } else {
@@ -131,7 +133,7 @@ export function UploadImage({
       maxCount={1}
       accept={accept}
       disabled={disabled || isLoading}
-      listType="picture-card"
+      listType={listType}
     >
       {fileList.length === 0 && (
         <div>
