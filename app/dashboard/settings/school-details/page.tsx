@@ -431,16 +431,9 @@ export default function SchoolDetailsPage() {
 
               <div>
                 <label className="text-base font-bold text-gray-500 mb-1 block">
-                  Primary Contact Person Name
+                  Contact Person
                 </label>
-                <p className="text-sm font-medium text-gray-500">{school.primary_contact_name || "N/A"}</p>
-              </div>
-
-              <div>
-                <label className="text-base font-bold text-gray-500 mb-1 block">
-                  Primary Contact Number
-                </label>
-                <p className="text-sm font-medium text-gray-500">{school.primary_contact_number || "-"}</p>
+                <p className="text-sm font-medium text-gray-500">{school.primary_contact_name || "-"}, {school.primary_contact_number || "-"}</p>
               </div>
             </div>
           </div>
