@@ -165,7 +165,11 @@ export default function ProfileDetailsPage() {
                   },
                 ]}
               >
-                <Input placeholder="Enter phone number" size="large" />
+                <Input
+                  placeholder="Enter phone number"
+                  size="large"
+                  disabled={!!profile?.phone_number}
+                />
               </Form.Item>
             </div>
 
@@ -178,6 +182,7 @@ export default function ProfileDetailsPage() {
                 type="email"
                 placeholder="Enter email address"
                 size="large"
+                disabled={!!profile?.email}
               />
             </Form.Item>
 

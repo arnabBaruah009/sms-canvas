@@ -185,7 +185,11 @@ export default function SchoolDetailsPage() {
                 ]}
                 className="flex-1"
               >
-                <Input placeholder="Enter phone number" size="large" />
+                <Input
+                  placeholder="Enter phone number"
+                  size="large"
+                  disabled={isEditing && !!school?.phone_number}
+                />
               </Form.Item>
 
               <Form.Item
@@ -198,6 +202,7 @@ export default function SchoolDetailsPage() {
                   type="email"
                   placeholder="Enter email address"
                   size="large"
+                  disabled={isEditing && !!school?.email}
                 />
               </Form.Item>
             </div>
