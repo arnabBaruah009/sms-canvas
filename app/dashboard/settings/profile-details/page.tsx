@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   useGetProfileDetailsQuery,
   useUpdateProfileMutation,
@@ -11,12 +12,13 @@ import { Input, Select, Form, Spin, Avatar, Tag } from "antd";
 import {
   User,
   Building2,
-  Edit,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { isValidEmail } from "@/lib/utils/validation.utils";
 import dayjs from "dayjs";
 import { UploadImage } from "@/components/upload-image/upload-image";
+import { setIsEditingProfile } from "@/lib/redux/slice/settings.slice";
+import type { RootState } from "@/lib/redux/store";
 
 const { Option } = Select;
 
@@ -39,18 +41,34 @@ const genderLabels: Record<Gender, string> = {
 
 export default function ProfileDetailsPage() {
   const [form] = Form.useForm();
-  const [isEditing, setIsEditing] = useState(false);
+  const dispatch = useDispatch();
+  const isEditing = useSelector(
+    (state: RootState) => state.settingsSlice.isEditingProfile
+  );
   const { data, isLoading, refetch } = useGetProfileDetailsQuery();
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
 
   const profile = data?.data;
+
+  useEffect(() => {
+    if (isEditing && profile) {
+      form.setFieldsValue({
+        name: profile.name,
+        email: profile.email,
+        phone_number: profile.phone_number,
+        gender: profile.gender,
+        role: profile.role,
+        avatar_url: profile.avatar_url,
+      });
+    }
+  }, [isEditing, profile, form]);
 
   const handleUpdateProfile = async (values: Partial<ProfileDetails>) => {
     try {
       const response = await updateProfile({ profile: values }).unwrap();
       if (response.data) {
         toast.success("Profile updated successfully!");
-        setIsEditing(false);
+        dispatch(setIsEditingProfile(false));
         form.resetFields();
         refetch();
       }
@@ -193,7 +211,7 @@ export default function ProfileDetailsPage() {
               <PrimaryButton
                 title="Cancel"
                 onClick={() => {
-                  setIsEditing(false);
+                  dispatch(setIsEditingProfile(false));
                   form.resetFields();
                 }}
                 disabled={isUpdating}
@@ -214,24 +232,6 @@ export default function ProfileDetailsPage() {
   return (
     <div className="w-full">
       <div className="">
-        <div className="flex justify-end items-start mb-6">
-          <PrimaryButton
-            title="Edit"
-            icon={<Edit className="w-4 h-4" />}
-            onClick={() => {
-              form.setFieldsValue({
-                name: profile.name,
-                email: profile.email,
-                phone_number: profile.phone_number,
-                gender: profile.gender,
-                role: profile.role,
-                avatar_url: profile.avatar_url,
-              });
-              setIsEditing(true);
-            }}
-          />
-        </div>
-
         <div className="space-y-6">
           {/* Avatar and Basic Info */}
           <div className="flex flex-row gap-6 items-start">

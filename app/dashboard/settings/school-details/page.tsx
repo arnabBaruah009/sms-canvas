@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   useGetSchoolQuery,
   useCreateSchoolMutation,
@@ -13,6 +14,8 @@ import { Building2, Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { isValidEmail } from "@/lib/utils/validation.utils";
 import { UploadImage } from "@/components/upload-image/upload-image";
+import { setIsEditingSchool } from "@/lib/redux/slice/settings.slice";
+import type { RootState } from "@/lib/redux/store";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -34,14 +37,24 @@ const schoolTypes: SchoolType[] = ["Government", "Private"];
 
 export default function SchoolDetailsPage() {
   const [form] = Form.useForm();
+  const dispatch = useDispatch();
   const [isAddingSchool, setIsAddingSchool] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const isEditing = useSelector(
+    (state: RootState) => state.settingsSlice.isEditingSchool
+  );
   const { data, isLoading, refetch } = useGetSchoolQuery();
   const [createSchool, { isLoading: isCreating }] = useCreateSchoolMutation();
   const [updateSchool, { isLoading: isUpdating }] = useUpdateSchoolMutation();
 
   const school = data?.data;
   const isSubmitting = isCreating || isUpdating;
+
+  useEffect(() => {
+    if (isEditing && school) {
+      form.setFieldsValue(school);
+      setIsAddingSchool(true);
+    }
+  }, [isEditing, school, form]);
 
   const handleAddSchool = async (values: SchoolDetails) => {
     try {
@@ -62,7 +75,7 @@ export default function SchoolDetailsPage() {
             : "School details added successfully!"
         );
         setIsAddingSchool(false);
-        setIsEditing(false);
+        dispatch(setIsEditingSchool(false));
         form.resetFields();
       }
     } catch (error: any) {
@@ -307,7 +320,7 @@ export default function SchoolDetailsPage() {
                 title="Cancel"
                 onClick={() => {
                   setIsAddingSchool(false);
-                  setIsEditing(false);
+                  dispatch(setIsEditingSchool(false));
                   form.resetFields();
                 }}
                 disabled={isSubmitting}
@@ -328,17 +341,6 @@ export default function SchoolDetailsPage() {
   return (
     <div className="w-full">
       <div className="">
-        <div className="flex justify-end items-start mb-6">
-          <PrimaryButton
-            title="Edit"
-            onClick={() => {
-              form.setFieldsValue(school);
-              setIsAddingSchool(true);
-              setIsEditing(true);
-            }}
-          />
-        </div>
-
         <div className="space-y-6">
           {school.logo_url && (
             <div className="flex justify-center">
