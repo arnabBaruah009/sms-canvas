@@ -1,8 +1,10 @@
+import { SchoolDetails } from "@/app/dashboard/settings/school-details/types/school.types";
+
 export type UserRole = "admin" | "teacher" | "staff" | "student";
 export type Gender = "male" | "female" | "other";
 
 export interface ProfileDetails {
-  id: string;
+  _id: string;
   name: string;
   phone_number: string;
   email: string;
@@ -11,10 +13,10 @@ export interface ProfileDetails {
   role: UserRole;
   password?: string;
   isEmailVerified: boolean;
-  school_id?: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at?: string | null;
+  school_id?: SchoolDetails;
+  createdAt: string;
+  updatedAt: string;
+  __v?: number;
 }
 
 export interface GetProfileResponse {
@@ -26,12 +28,14 @@ export interface UpdateProfileRequest {
   profile: Partial<
     Omit<
       ProfileDetails,
-      | "id"
+      | "_id"
       | "password"
       | "isEmailVerified"
-      | "created_at"
-      | "updated_at"
-      | "deleted_at"
+      | "createdAt"
+      | "updatedAt"
+      | "__v"
+      | "email"
+      | "school_id"
     >
   >;
 }

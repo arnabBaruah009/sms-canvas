@@ -7,14 +7,10 @@ import {
 } from "@/lib/apis/profile.api";
 import { ProfileDetails, UserRole, Gender } from "./types/profile.types";
 import { PrimaryButton } from "@/components/buttons/primary-button";
-import { Input, Select, Form, Card, Spin, Tag, Avatar } from "antd";
+import { Input, Select, Form, Spin, Avatar } from "antd";
 import {
   User,
-  Mail,
-  Phone,
   Building2,
-  Shield,
-  Calendar,
   Edit,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
@@ -26,13 +22,6 @@ const { Option } = Select;
 
 const userRoles: UserRole[] = ["admin", "teacher", "staff", "student"];
 const genders: Gender[] = ["male", "female", "other"];
-
-const roleColors: Record<UserRole, string> = {
-  admin: "red",
-  teacher: "blue",
-  staff: "green",
-  student: "orange",
-};
 
 const roleLabels: Record<UserRole, string> = {
   admin: "Admin",
@@ -47,22 +36,6 @@ const genderLabels: Record<Gender, string> = {
   other: "Other",
 };
 
-// Dummy data for testing
-const dummyProfile: ProfileDetails = {
-  id: "usr_123456789",
-  name: "John Doe",
-  phone_number: "9876543210",
-  email: "john.doe@example.com",
-  avatar_url:
-    "https://t4.ftcdn.net/jpg/14/20/90/45/360_F_1420904592_2VrDzoD1u2hcofrG9e9AriDYmApoOdFe.jpg",
-  gender: "male",
-  role: "admin",
-  isEmailVerified: true,
-  school_id: "school_123",
-  created_at: "2024-01-15T10:30:00Z",
-  updated_at: "2024-12-20T14:45:00Z",
-  deleted_at: null,
-};
 
 export default function ProfileDetailsPage() {
   const [form] = Form.useForm();
@@ -70,8 +43,7 @@ export default function ProfileDetailsPage() {
   const { data, isLoading, refetch } = useGetProfileDetailsQuery();
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
 
-  // Use dummy data if API returns no data
-  const profile = data?.data || dummyProfile;
+  const profile = data?.data;
 
   const handleUpdateProfile = async (values: Partial<ProfileDetails>) => {
     try {
@@ -110,10 +82,18 @@ export default function ProfileDetailsPage() {
     );
   }
 
+  if (!profile) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   if (isEditing) {
     return (
-      <div className="w-full max-w-4xl mx-auto p-6">
-        <Card className="shadow-sm border border-gray-200">
+      <div className="w-full">
+        <div className="">
           <div className="mb-6">
             <h2 className="text-2xl font-semibold mb-2">Edit Profile</h2>
             <p className="text-sm text-gray-500">
@@ -226,21 +206,15 @@ export default function ProfileDetailsPage() {
               />
             </div>
           </Form>
-        </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6">
-      <Card className="shadow-sm border border-gray-200">
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h2 className="text-2xl font-semibold mb-2">Profile Details</h2>
-            <p className="text-sm text-gray-500">
-              View and manage your profile information
-            </p>
-          </div>
+    <div className="w-full">
+      <div className="">
+        <div className="flex justify-end items-start mb-6">
           <PrimaryButton
             title="Edit"
             icon={<Edit className="w-4 h-4" />}
@@ -260,68 +234,53 @@ export default function ProfileDetailsPage() {
 
         <div className="space-y-6">
           {/* Avatar and Basic Info */}
-          <div className="flex flex-col md:flex-row items-center gap-6 pb-6 border-b border-gray-200">
-            <Avatar
-              src={profile.avatar_url}
-              size={120}
-              icon={<User className="w-16 h-16" />}
-              className="bg-gray-100"
-            />
-            <div className="flex-1 text-center md:text-left">
-              <h3 className="text-2xl font-semibold mb-2">{profile.name}</h3>
-              <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                <Tag color={roleColors[profile.role]}>
-                  {roleLabels[profile.role]}
-                </Tag>
-                {profile.isEmailVerified && (
-                  <Tag color="green">Email Verified</Tag>
-                )}
-                {!profile.isEmailVerified && (
-                  <Tag color="orange">Email Not Verified</Tag>
-                )}
-              </div>
+          {profile.avatar_url && (
+            <div className="flex justify-center">
+              <Avatar
+                src={profile.avatar_url}
+                size={120}
+                icon={<User className="w-16 h-16" />}
+                className="bg-gray-100"
+              />
             </div>
-          </div>
+          )}
 
-          {/* Contact Information */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Mail className="w-5 h-5" />
-              Contact Information
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Profile Information */}
+          <div className="flex flex-row w-full gap-8">
+            {/* Left Column */}
+            <div className="flex-1 space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-500 mb-1 block flex items-center gap-2">
-                  <Mail className="w-4 h-4" />
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  Name
+                </label>
+                <p className="text-sm font-medium text-gray-500">
+                  {profile.name}
+                </p>
+              </div>
+
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
                   Email
                 </label>
-                <p className="text-base text-gray-900">{profile.email}</p>
+                <p className="text-sm font-medium text-gray-500">
+                  {profile.email}
+                </p>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-500 mb-1 block flex items-center gap-2">
-                  <Phone className="w-4 h-4" />
+                <label className="text-base font-bold text-gray-500 mb-1 block">
                   Phone Number
                 </label>
-                <p className="text-base text-gray-900">
+                <p className="text-sm font-medium text-gray-500">
                   {profile.phone_number}
                 </p>
               </div>
-            </div>
-          </div>
 
-          {/* Personal Information */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <User className="w-5 h-5" />
-              Personal Information
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="text-sm font-medium text-gray-500 mb-1 block">
+                <label className="text-base font-bold text-gray-500 mb-1 block">
                   Gender
                 </label>
-                <p className="text-base text-gray-900">
+                <p className="text-sm font-medium text-gray-500">
                   {profile.gender
                     ? genderLabels[profile.gender]
                     : "Not specified"}
@@ -329,12 +288,53 @@ export default function ProfileDetailsPage() {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-500 mb-1 block flex items-center gap-2">
-                  <Shield className="w-4 h-4" />
+                <label className="text-base font-bold text-gray-500 mb-1 block">
                   Role
                 </label>
-                <p className="text-base text-gray-900">
+                <p className="text-sm font-medium text-gray-500">
                   {roleLabels[profile.role]}
+                </p>
+              </div>
+            </div>
+
+            {/* Vertical Separator */}
+            <div className="w-px bg-gray-300"></div>
+
+            {/* Right Column */}
+            <div className="flex-1 space-y-4">
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  Email Verification Status
+                </label>
+                <p className="text-sm font-medium text-gray-500">
+                  {profile.isEmailVerified ? "Verified" : "Not Verified"}
+                </p>
+              </div>
+
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  Account ID
+                </label>
+                <p className="text-sm font-medium text-gray-500 font-mono text-xs">
+                  {profile._id}
+                </p>
+              </div>
+
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  Created At
+                </label>
+                <p className="text-sm font-medium text-gray-500">
+                  {formatDate(profile.createdAt)}
+                </p>
+              </div>
+
+              <div>
+                <label className="text-base font-bold text-gray-500 mb-1 block">
+                  Last Updated
+                </label>
+                <p className="text-sm font-medium text-gray-500">
+                  {formatDate(profile.updatedAt)}
                 </p>
               </div>
             </div>
@@ -347,61 +347,124 @@ export default function ProfileDetailsPage() {
                 <Building2 className="w-5 h-5" />
                 School Information
               </h4>
-              <div>
-                <label className="text-sm font-medium text-gray-500 mb-1 block">
-                  School ID
-                </label>
-                <p className="text-base text-gray-900">{profile.school_id}</p>
+              <div className="flex flex-row w-full gap-8">
+                {/* Left Column */}
+                <div className="flex-1 space-y-4">
+                  <div>
+                    <label className="text-base font-bold text-gray-500 mb-1 block">
+                      School Name
+                    </label>
+                    <p className="text-sm font-medium text-gray-500">
+                      {profile.school_id.name}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-base font-bold text-gray-500 mb-1 block">
+                      Phone Number
+                    </label>
+                    <p className="text-sm font-medium text-gray-500">
+                      {profile.school_id.phone_number}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-base font-bold text-gray-500 mb-1 block">
+                      Email
+                    </label>
+                    <p className="text-sm font-medium text-gray-500">
+                      {profile.school_id.email}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-base font-bold text-gray-500 mb-1 block">
+                      School Level
+                    </label>
+                    <p className="text-sm font-medium text-gray-500">
+                      {profile.school_id.level}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-base font-bold text-gray-500 mb-1 block">
+                      Board
+                    </label>
+                    <p className="text-sm font-medium text-gray-500">
+                      {profile.school_id.board}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Vertical Separator */}
+                <div className="w-px bg-gray-300"></div>
+
+                {/* Right Column */}
+                <div className="flex-1 space-y-4">
+                  <div>
+                    <label className="text-base font-bold text-gray-500 mb-1 block">
+                      Address
+                    </label>
+                    <p className="text-sm font-medium text-gray-500">
+                      {profile.school_id.address_line}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-base font-bold text-gray-500 mb-1 block">
+                      City
+                    </label>
+                    <p className="text-sm font-medium text-gray-500">
+                      {profile.school_id.city}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-base font-bold text-gray-500 mb-1 block">
+                      State
+                    </label>
+                    <p className="text-sm font-medium text-gray-500">
+                      {profile.school_id.state}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-base font-bold text-gray-500 mb-1 block">
+                      Country
+                    </label>
+                    <p className="text-sm font-medium text-gray-500">
+                      {profile.school_id.country}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-base font-bold text-gray-500 mb-1 block">
+                      Pincode
+                    </label>
+                    <p className="text-sm font-medium text-gray-500">
+                      {profile.school_id.pincode}
+                    </p>
+                  </div>
+
+                  {(profile.school_id.primary_contact_name ||
+                    profile.school_id.primary_contact_number) && (
+                      <div>
+                        <label className="text-base font-bold text-gray-500 mb-1 block">
+                          Contact Person
+                        </label>
+                        <p className="text-sm font-medium text-gray-500">
+                          {profile.school_id.primary_contact_name || "-"},{" "}
+                          {profile.school_id.primary_contact_number || "-"}
+                        </p>
+                      </div>
+                    )}
+                </div>
               </div>
             </div>
           )}
 
-          {/* Account Information */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
-              Account Information
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="text-sm font-medium text-gray-500 mb-1 block">
-                  Account ID
-                </label>
-                <p className="text-base text-gray-900 font-mono text-sm">
-                  {profile.id}
-                </p>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-500 mb-1 block">
-                  Email Verification Status
-                </label>
-                <p className="text-base text-gray-900">
-                  {profile.isEmailVerified ? "Verified" : "Not Verified"}
-                </p>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-500 mb-1 block">
-                  Created At
-                </label>
-                <p className="text-base text-gray-900">
-                  {formatDate(profile.created_at)}
-                </p>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-500 mb-1 block">
-                  Last Updated
-                </label>
-                <p className="text-base text-gray-900">
-                  {formatDate(profile.updated_at)}
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }
