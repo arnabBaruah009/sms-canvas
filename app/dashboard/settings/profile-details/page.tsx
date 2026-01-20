@@ -7,7 +7,7 @@ import {
 } from "@/lib/apis/profile.api";
 import { ProfileDetails, UserRole, Gender } from "./types/profile.types";
 import { PrimaryButton } from "@/components/buttons/primary-button";
-import { Input, Select, Form, Spin, Avatar } from "antd";
+import { Input, Select, Form, Spin, Avatar, Tag } from "antd";
 import {
   User,
   Building2,
@@ -234,48 +234,36 @@ export default function ProfileDetailsPage() {
 
         <div className="space-y-6">
           {/* Avatar and Basic Info */}
-          {profile.avatar_url && (
-            <div className="flex justify-center">
-              <Avatar
-                src={profile.avatar_url}
-                size={120}
-                icon={<User className="w-16 h-16" />}
-                className="bg-gray-100"
-              />
+          <div className="flex flex-row gap-6 items-start">
+            <Avatar
+              src={profile.avatar_url}
+              size={120}
+              icon={<User className="w-16 h-16" />}
+              className="bg-gray-100"
+            />
+            <div className="flex flex-col gap-2">
+              <h3 className="text-2xl font-semibold text-gray-900">
+                {profile.name}
+              </h3>
+              <div className="flex flex-col gap-1">
+                <p className="text-sm text-gray-600">{profile.email}</p>
+                <p className="text-sm text-gray-600">{profile.phone_number}</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {profile.isEmailVerified ? (
+                  <Tag color="green">Email Verified</Tag>
+                ) : (
+                  <Tag color="orange">Email Not Verified</Tag>
+                )}
+                <Tag color="blue">{roleLabels[profile.role]}</Tag>
+              </div>
             </div>
-          )}
+          </div>
 
           {/* Profile Information */}
           <div className="flex flex-row w-full gap-8">
             {/* Left Column */}
             <div className="flex-1 space-y-4">
-              <div>
-                <label className="text-base font-bold text-gray-500 mb-1 block">
-                  Name
-                </label>
-                <p className="text-sm font-medium text-gray-500">
-                  {profile.name}
-                </p>
-              </div>
-
-              <div>
-                <label className="text-base font-bold text-gray-500 mb-1 block">
-                  Email
-                </label>
-                <p className="text-sm font-medium text-gray-500">
-                  {profile.email}
-                </p>
-              </div>
-
-              <div>
-                <label className="text-base font-bold text-gray-500 mb-1 block">
-                  Phone Number
-                </label>
-                <p className="text-sm font-medium text-gray-500">
-                  {profile.phone_number}
-                </p>
-              </div>
-
               <div>
                 <label className="text-base font-bold text-gray-500 mb-1 block">
                   Gender
@@ -289,10 +277,10 @@ export default function ProfileDetailsPage() {
 
               <div>
                 <label className="text-base font-bold text-gray-500 mb-1 block">
-                  Role
+                  Account ID
                 </label>
-                <p className="text-sm font-medium text-gray-500">
-                  {roleLabels[profile.role]}
+                <p className="text-sm font-medium text-gray-500 font-mono text-xs">
+                  {profile._id}
                 </p>
               </div>
             </div>
@@ -302,24 +290,6 @@ export default function ProfileDetailsPage() {
 
             {/* Right Column */}
             <div className="flex-1 space-y-4">
-              <div>
-                <label className="text-base font-bold text-gray-500 mb-1 block">
-                  Email Verification Status
-                </label>
-                <p className="text-sm font-medium text-gray-500">
-                  {profile.isEmailVerified ? "Verified" : "Not Verified"}
-                </p>
-              </div>
-
-              <div>
-                <label className="text-base font-bold text-gray-500 mb-1 block">
-                  Account ID
-                </label>
-                <p className="text-sm font-medium text-gray-500 font-mono text-xs">
-                  {profile._id}
-                </p>
-              </div>
-
               <div>
                 <label className="text-base font-bold text-gray-500 mb-1 block">
                   Created At
