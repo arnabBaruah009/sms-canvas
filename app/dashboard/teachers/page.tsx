@@ -151,7 +151,7 @@ export default function TeachersPage() {
                     )
                 }
                 placement="right"
-                width={480}
+                size={480}
                 open={!!selectedTeacherId}
                 onClose={() => setSelectedTeacherId(null)}
                 extra={

@@ -119,7 +119,7 @@ export default function StudentsPage() {
                     )
                 }
                 placement="right"
-                width={480}
+                size={480}
                 open={!!selectedStudentId}
                 onClose={() => setSelectedStudentId(null)}
                 extra={
