@@ -309,13 +309,16 @@ export default function StudentsPage() {
                 onCancel={closeAddModal}
                 footer={null}
                 width={640}
-                destroyOnClose
+                destroyOnHidden
             >
                 <Form
                     form={form}
                     layout="vertical"
                     onFinish={handleAddStudent}
                     className="pt-2"
+                    initialValues={{
+                        education: [{ yearFrom: undefined, yearTo: undefined, description: "" }],
+                    }}
                 >
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
                         <Form.Item
@@ -334,13 +337,17 @@ export default function StudentsPage() {
                                         /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/,
                                     message: "Enter a valid phone number",
                                 },
+                                {
+                                    required: true,
+                                    message: "Phone number is required",
+                                }
                             ]}
                         >
                             <Input placeholder="+1 234 567 8900" />
                         </Form.Item>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-                        <Form.Item name="gender" label="Gender">
+                        <Form.Item name="gender" label="Gender" rules={[{ required: true, message: "Gender is required" }]}>
                             <Select
                                 placeholder="Select gender"
                                 allowClear
@@ -378,80 +385,77 @@ export default function StudentsPage() {
                                         onClick={() => add()}
                                         icon={<PlusOutlined />}
                                         className="mb-2"
-                                    >
-                                        Add entry
-                                    </Button>
+                                        size="small"
+                                    />
                                 </div>
                                 {fields.map(({ key, name, ...restField }) => (
                                     <div
                                         key={key}
-                                        className="flex gap-2 items-start p-3 mb-2 rounded border border-gray-200 bg-gray-50/50"
+                                        className="flex gap-2 items-center p-3 mb-2 rounded border border-gray-200 bg-gray-50/50"
                                     >
-                                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                            <Form.Item
-                                                {...restField}
-                                                name={[name, "yearFrom"]}
-                                                label="From"
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: "Required",
-                                                    },
-                                                    {
-                                                        type: "number",
-                                                        min: 1900,
-                                                        max: 2100,
-                                                        message: "1900–2100",
-                                                    },
-                                                ]}
-                                            >
-                                                <InputNumber
-                                                    className="w-full"
-                                                    placeholder="Year"
-                                                    min={1900}
-                                                    max={2100}
-                                                />
-                                            </Form.Item>
-                                            <Form.Item
-                                                {...restField}
-                                                name={[name, "yearTo"]}
-                                                label="To"
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: "Required",
-                                                    },
-                                                    {
-                                                        type: "number",
-                                                        min: 1900,
-                                                        max: 2100,
-                                                        message: "1900–2100",
-                                                    },
-                                                ]}
-                                            >
-                                                <InputNumber
-                                                    className="w-full"
-                                                    placeholder="Year"
-                                                    min={1900}
-                                                    max={2100}
-                                                />
-                                            </Form.Item>
-                                            <Form.Item
-                                                {...restField}
-                                                name={[name, "description"]}
-                                                label="Description"
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: "Required",
-                                                    },
-                                                ]}
-                                                className="sm:col-span-3"
-                                            >
-                                                <Input placeholder="School / degree / institution" />
-                                            </Form.Item>
-                                        </div>
-                                        <Form.Item className="mb-0 mt-6">
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, "yearFrom"]}
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "Required",
+                                                },
+                                                {
+                                                    type: "number",
+                                                    min: 1900,
+                                                    max: 2100,
+                                                    message: "1900–2100",
+                                                },
+                                            ]}
+                                            style={{ marginBottom: 0, flex: '0 0 100px' }}
+                                        >
+                                            <InputNumber
+                                                style={{ width: "100%" }}
+                                                placeholder="From"
+                                                min={1900}
+                                                max={2100}
+                                            />
+                                        </Form.Item>
+                                        <span className="mx-1">-</span>
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, "yearTo"]}
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "Required",
+                                                },
+                                                {
+                                                    type: "number",
+                                                    min: 1900,
+                                                    max: 2100,
+                                                    message: "1900–2100",
+                                                },
+                                            ]}
+                                            style={{ marginBottom: 0, flex: '0 0 100px' }}
+                                        >
+                                            <InputNumber
+                                                style={{ width: "100%" }}
+                                                placeholder="To"
+                                                min={1900}
+                                                max={2100}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, "description"]}
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: "Required",
+                                                },
+                                            ]}
+                                            style={{ marginBottom: 0, flex: '1 1 200px' }}
+                                        >
+                                            <Input placeholder="Class" />
+                                        </Form.Item>
+                                        <Form.Item style={{ marginBottom: 0 }}>
                                             <Button
                                                 type="text"
                                                 danger
