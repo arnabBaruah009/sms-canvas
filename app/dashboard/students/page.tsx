@@ -98,49 +98,54 @@ export default function StudentsPage() {
     const columns: ColumnsType<Student> = [
         {
             title: "Avatar",
-            dataIndex: "avatar",
+            dataIndex: ["user_id", "avatar_url"],
             key: "avatar",
             width: 80,
             render: (_, record) => (
                 <Avatar
-                    src={record.avatar}
-                    icon={!record.avatar ? <UserOutlined /> : undefined}
-                    alt={record.name}
+                    src={record.user_id?.avatar_url}
+                    icon={!record.user_id?.avatar_url ? <UserOutlined /> : undefined}
+                    alt={record.user_id?.name}
                     className="bg-[var(--primary-color)]"
                 />
             ),
         },
         {
             title: "Name",
-            dataIndex: "name",
+            dataIndex: ["user_id", "name"],
             key: "name",
-            sorter: (a, b) => a.name.localeCompare(b.name),
-            render: (name) => <span className="font-medium">{name}</span>,
+            sorter: (a, b) => (a.user_id?.name ?? "").localeCompare(b.user_id?.name ?? ""),
+            render: (_, record) => (
+                <span className="font-medium">{record.user_id?.name}</span>
+            ),
         },
-        {
-            title: "ID",
-            dataIndex: "id",
-            key: "id",
-            width: 120,
-            render: (id) => <Text type="secondary">ID: {id}</Text>,
-        },
+        // {
+        //     title: "ID",
+        //     dataIndex: "_id",
+        //     key: "_id",
+        //     width: 120,
+        //     render: (id) => <Text type="secondary">ID: {id}</Text>,
+        // },
         {
             title: "Mobile",
-            dataIndex: "mobile",
+            dataIndex: ["user_id", "phone_number"],
             key: "mobile",
             width: 140,
+            render: (_, record) => record.user_id?.phone_number,
         },
         {
             title: "Gender",
-            dataIndex: "gender",
+            dataIndex: ["user_id", "gender"],
             key: "gender",
             width: 100,
+            render: (_, record) => record.user_id?.gender,
         },
         {
             title: "DOB",
             dataIndex: "dob",
             key: "dob",
             width: 110,
+            render: (_, record) => dayjs(record.dob).format("DD/MM/YYYY"),
         },
         {
             title: "Address",
@@ -176,7 +181,7 @@ export default function StudentsPage() {
             />
             <div className="flex-1 overflow-auto pt-4 pb-6">
                 <Table<Student>
-                    rowKey="id"
+                    rowKey="_id"
                     columns={columns}
                     dataSource={students}
                     pagination={{
@@ -185,7 +190,7 @@ export default function StudentsPage() {
                         showTotal: (total) => `Total ${total} students`,
                     }}
                     onRow={(record) => ({
-                        onClick: () => setSelectedStudentId(record.id),
+                        onClick: () => setSelectedStudentId(record._id),
                         style: { cursor: "pointer" },
                     })}
                     className="shadow-sm rounded-lg overflow-hidden"
@@ -195,7 +200,7 @@ export default function StudentsPage() {
             <Drawer
                 title={
                     selectedStudent ? (
-                        <span className="font-semibold">{selectedStudent.name}</span>
+                        <span className="font-semibold">{selectedStudent.user_id?.name}</span>
                     ) : (
                         "Student Details"
                     )
@@ -206,7 +211,7 @@ export default function StudentsPage() {
                 onClose={() => setSelectedStudentId(null)}
                 extra={
                     selectedStudent && (
-                        <Text type="secondary">ID: {selectedStudent.id}</Text>
+                        <Text type="secondary">ID: {selectedStudent._id}</Text>
                     )
                 }
             >
@@ -219,18 +224,18 @@ export default function StudentsPage() {
                         <div>
                             <div className="flex items-center gap-3 mb-4">
                                 <Avatar
-                                    src={selectedStudent.avatar}
-                                    icon={!selectedStudent.avatar ? <UserOutlined /> : undefined}
+                                    src={selectedStudent.user_id?.avatar_url}
+                                    icon={!selectedStudent.user_id?.avatar_url ? <UserOutlined /> : undefined}
                                     size={64}
                                     className="bg-[var(--primary-color)]"
                                 />
                                 <div>
                                     <Text strong className="text-base">
-                                        {selectedStudent.firstName} {selectedStudent.lastName}
+                                        {selectedStudent.user_id?.name}
                                     </Text>
-                                    {selectedStudent.department && (
+                                    {selectedStudent.user_id?.role && (
                                         <div className="text-sm text-gray-500">
-                                            {selectedStudent.department}
+                                            {selectedStudent.user_id.role}
                                         </div>
                                     )}
                                 </div>
@@ -242,41 +247,28 @@ export default function StudentsPage() {
                                 Basic Details
                             </Text>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                                <Text type="secondary">First name</Text>
-                                <Text>{selectedStudent.firstName}</Text>
-                                <Text type="secondary">Last Name</Text>
-                                <Text>{selectedStudent.lastName}</Text>
-                                {selectedStudent.department && (
-                                    <>
-                                        <Text type="secondary">Department</Text>
-                                        <Text>{selectedStudent.department}</Text>
-                                    </>
-                                )}
+                                <Text type="secondary">Name</Text>
+                                <Text>{selectedStudent.user_id?.name}</Text>
                                 <Text type="secondary">Mobile</Text>
-                                <Text>{selectedStudent.mobile}</Text>
-                                {selectedStudent.email && (
+                                <Text>{selectedStudent.user_id?.phone_number}</Text>
+                                {selectedStudent.user_id?.email && (
                                     <>
                                         <Text type="secondary">Email</Text>
-                                        <Text>{selectedStudent.email}</Text>
+                                        <Text>{selectedStudent.user_id.email}</Text>
                                     </>
                                 )}
-                                <Text type="secondary">Gender</Text>
-                                <Text>{selectedStudent.gender}</Text>
+                                {selectedStudent.user_id?.gender && (
+                                    <>
+                                        <Text type="secondary">Gender</Text>
+                                        <Text>{selectedStudent.user_id.gender}</Text>
+                                    </>
+                                )}
                                 <Text type="secondary">DOB</Text>
                                 <Text>{selectedStudent.dob}</Text>
                                 <Text type="secondary">Address</Text>
                                 <Text className="col-span-2">{selectedStudent.address}</Text>
                             </div>
                         </div>
-
-                        {selectedStudent.about && (
-                            <div>
-                                <Text strong className="block mb-2 text-gray-700">
-                                    About Student
-                                </Text>
-                                <p className="text-sm text-gray-600">{selectedStudent.about}</p>
-                            </div>
-                        )}
 
                         {selectedStudent.education && selectedStudent.education.length > 0 && (
                             <div>
@@ -289,7 +281,7 @@ export default function StudentsPage() {
                                             <Text strong>
                                                 {entry.yearFrom} - {entry.yearTo}:
                                             </Text>{" "}
-                                            {entry.description}
+                                            Class: {entry.description}
                                         </li>
                                     ))}
                                 </ul>

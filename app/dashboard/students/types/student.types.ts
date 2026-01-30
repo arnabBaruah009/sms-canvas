@@ -1,3 +1,5 @@
+import { User } from "../../settings/profile-details/types/profile.types";
+
 export type Gender = "Male" | "Female" | "Other";
 
 export interface EducationEntry {
@@ -7,19 +9,14 @@ export interface EducationEntry {
 }
 
 export interface Student {
-  id: string;
-  avatar?: string;
-  firstName: string;
-  lastName: string;
-  name: string;
-  mobile: string;
-  email?: string;
-  gender: Gender;
+  _id: string;
+  user_id: User;
   dob: string;
   address: string;
-  department?: string;
-  about?: string;
-  education?: EducationEntry[];
+  education: EducationEntry[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
 
 export interface GetStudentsResponse {

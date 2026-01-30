@@ -3,7 +3,7 @@ import { SchoolDetails } from "@/app/dashboard/settings/school-details/types/sch
 export type UserRole = "admin" | "teacher" | "staff" | "student";
 export type Gender = "male" | "female" | "other";
 
-export interface ProfileDetails {
+export interface User {
   _id: string;
   name: string;
   phone_number: string;
@@ -20,14 +20,14 @@ export interface ProfileDetails {
 }
 
 export interface GetProfileResponse {
-  data: ProfileDetails;
+  data: User;
   message?: string;
 }
 
 export interface UpdateProfileRequest {
   profile: Partial<
     Omit<
-      ProfileDetails,
+      User,
       | "_id"
       | "password"
       | "isEmailVerified"
@@ -41,6 +41,6 @@ export interface UpdateProfileRequest {
 }
 
 export interface UpdateProfileResponse {
-  data: ProfileDetails;
+  data: User;
   message?: string;
 }

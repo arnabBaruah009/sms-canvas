@@ -7,9 +7,9 @@ import {
 
 export const profileApi = apiSetup.injectEndpoints({
   endpoints: (builder) => ({
-    getProfileDetails: builder.query<GetProfileResponse, void>({
+    getUser: builder.query<GetProfileResponse, void>({
       query: () => ({
-        url: "api/v1/getProfileDetails",
+        url: "api/v1/getUser",
         method: "GET",
       }),
     }),
@@ -26,5 +26,5 @@ export const profileApi = apiSetup.injectEndpoints({
   }),
 });
 
-export const { useGetProfileDetailsQuery, useUpdateProfileMutation } =
+export const { useGetUserQuery, useUpdateProfileMutation } =
   profileApi;

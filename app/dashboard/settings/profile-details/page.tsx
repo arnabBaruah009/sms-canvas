@@ -3,15 +3,15 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  useGetProfileDetailsQuery,
+  useGetUserQuery,
   useUpdateProfileMutation,
 } from "@/lib/apis/profile.api";
-import { ProfileDetails, UserRole, Gender } from "./types/profile.types";
+import { User, UserRole, Gender } from "./types/profile.types";
 import { PrimaryButton } from "@/components/buttons/primary-button";
 import { Input, Select, Form, Spin, Avatar, Tag } from "antd";
 import {
-  User,
   Building2,
+  UserRound,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { isValidEmail } from "@/lib/utils/validation.utils";
@@ -39,13 +39,13 @@ const genderLabels: Record<Gender, string> = {
 };
 
 
-export default function ProfileDetailsPage() {
+export default function UserPage() {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const isEditing = useSelector(
     (state: RootState) => state.settingsSlice.isEditingProfile
   );
-  const { data, isLoading, refetch } = useGetProfileDetailsQuery();
+  const { data, isLoading, refetch } = useGetUserQuery();
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
 
   const profile = data?.data;
@@ -63,7 +63,7 @@ export default function ProfileDetailsPage() {
     }
   }, [isEditing, profile, form]);
 
-  const handleUpdateProfile = async (values: Partial<ProfileDetails>) => {
+  const handleUpdateProfile = async (values: Partial<User>) => {
     try {
       const response = await updateProfile({ profile: values }).unwrap();
       if (response.data) {
@@ -243,7 +243,7 @@ export default function ProfileDetailsPage() {
             <Avatar
               src={profile.avatar_url}
               size={120}
-              icon={<User className="w-16 h-16" />}
+              icon={<UserRound className="w-16 h-16" />}
               className="bg-gray-100"
             />
             <div className="flex flex-col gap-2">
