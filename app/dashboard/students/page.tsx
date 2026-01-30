@@ -1,18 +1,48 @@
 "use client";
 
 import { useState } from "react";
-import { Table, Drawer, Avatar, Spin, Typography } from "antd";
+import {
+    Table,
+    Drawer,
+    Avatar,
+    Spin,
+    Typography,
+    Modal,
+    Form,
+    Input,
+    InputNumber,
+    Select,
+    DatePicker,
+    Button,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useGetStudentsQuery, useGetStudentByIdQuery } from "@/lib/apis/students.api";
-import type { Student } from "./types/student.types";
+import {
+    useGetStudentsQuery,
+    useGetStudentByIdQuery,
+    useCreateStudentMutation,
+} from "@/lib/apis/students.api";
+import type { Student, CreateStudentDto } from "./types/student.types";
 import { DashboardHeader } from "@/components/dashboard-header/dashboard-header";
-import { UserOutlined } from "@ant-design/icons";
+import { PrimaryButton } from "@/components/buttons/primary-button";
+import { UserOutlined, PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
+import { toast } from "react-hot-toast";
 
 const { Text } = Typography;
+const { TextArea } = Input;
+
+const GENDER_OPTIONS = [
+    { value: "male", label: "Male" },
+    { value: "female", label: "Female" },
+    { value: "other", label: "Other" },
+];
 
 export default function StudentsPage() {
     const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+    const [addModalOpen, setAddModalOpen] = useState(false);
+    const [form] = Form.useForm();
     const { data: studentsData, isLoading: isLoadingList } = useGetStudentsQuery();
+    const [createStudent, { isLoading: isCreating }] = useCreateStudentMutation();
     const { data: studentData, isLoading: isLoadingStudent } =
         useGetStudentByIdQuery(selectedStudentId ?? "", {
             skip: !selectedStudentId,
@@ -20,6 +50,50 @@ export default function StudentsPage() {
 
     const students = studentsData?.data ?? [];
     const selectedStudent = studentData?.data ?? null;
+
+    const openAddModal = () => {
+        form.resetFields();
+        setAddModalOpen(true);
+    };
+
+    const closeAddModal = () => {
+        setAddModalOpen(false);
+        form.resetFields();
+    };
+
+    const handleAddStudent = async (values: Record<string, unknown>) => {
+        try {
+            const dob = values.dob as dayjs.Dayjs | string;
+            const education = values.education as Array<{
+                yearFrom?: number;
+                yearTo?: number;
+                description?: string;
+            }> | undefined;
+            const student: CreateStudentDto = {
+                name: values.name as string,
+                phone_number: (values.phone_number as string) || undefined,
+                gender: (values.gender as string) || undefined,
+                avatar_url: (values.avatar_url as string) || undefined,
+                dob: dayjs.isDayjs(dob) ? dob.format("YYYY-MM-DD") : (dob as string),
+                address: values.address as string,
+                about: (values.about as string) || undefined,
+                education: education?.filter(
+                    (e) =>
+                        typeof e?.yearFrom === "number" &&
+                        typeof e?.yearTo === "number" &&
+                        e?.description
+                ) as CreateStudentDto["education"],
+            };
+            await createStudent({ student }).unwrap();
+            toast.success("Student added successfully");
+            closeAddModal();
+        } catch (err: unknown) {
+            const message =
+                (err as { data?: { message?: string } })?.data?.message ??
+                "Failed to add student";
+            toast.error(message);
+        }
+    };
 
     const columns: ColumnsType<Student> = [
         {
@@ -91,6 +165,14 @@ export default function StudentsPage() {
                 description="Manage and view student details"
                 showBackButton={false}
                 bottomBorder={true}
+                buttons={[
+                    <PrimaryButton
+                        key="add-student"
+                        title="Add student"
+                        icon={<PlusOutlined />}
+                        onClick={openAddModal}
+                    />,
+                ]}
             />
             <div className="flex-1 overflow-auto pt-4 pb-6">
                 <Table<Student>
@@ -220,6 +302,180 @@ export default function StudentsPage() {
                     </div>
                 )}
             </Drawer>
+
+            <Modal
+                title="Add student"
+                open={addModalOpen}
+                onCancel={closeAddModal}
+                footer={null}
+                width={640}
+                destroyOnClose
+            >
+                <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={handleAddStudent}
+                    className="pt-2"
+                >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+                        <Form.Item
+                            name="name"
+                            label="Full name"
+                            rules={[{ required: true, message: "Name is required" }]}
+                        >
+                            <Input placeholder="e.g. John Doe" />
+                        </Form.Item>
+                        <Form.Item
+                            name="phone_number"
+                            label="Phone number"
+                            rules={[
+                                {
+                                    pattern:
+                                        /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/,
+                                    message: "Enter a valid phone number",
+                                },
+                            ]}
+                        >
+                            <Input placeholder="+1 234 567 8900" />
+                        </Form.Item>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+                        <Form.Item name="gender" label="Gender">
+                            <Select
+                                placeholder="Select gender"
+                                allowClear
+                                options={GENDER_OPTIONS}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name="dob"
+                            label="Date of birth"
+                            rules={[{ required: true, message: "DOB is required" }]}
+                        >
+                            <DatePicker className="w-full" format="YYYY-MM-DD" />
+                        </Form.Item>
+                    </div>
+                    <Form.Item
+                        name="address"
+                        label="Address"
+                        rules={[{ required: true, message: "Address is required" }]}
+                    >
+                        <Input placeholder="Street, city, state, country" />
+                    </Form.Item>
+                    <Form.Item name="about" label="About">
+                        <TextArea rows={3} placeholder="Brief bio or notes" />
+                    </Form.Item>
+
+                    <Form.List name="education">
+                        {(fields, { add, remove }) => (
+                            <>
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-sm font-medium text-gray-700">
+                                        Education
+                                    </span>
+                                    <Button
+                                        type="dashed"
+                                        onClick={() => add()}
+                                        icon={<PlusOutlined />}
+                                        className="mb-2"
+                                    >
+                                        Add entry
+                                    </Button>
+                                </div>
+                                {fields.map(({ key, name, ...restField }) => (
+                                    <div
+                                        key={key}
+                                        className="flex gap-2 items-start p-3 mb-2 rounded border border-gray-200 bg-gray-50/50"
+                                    >
+                                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                            <Form.Item
+                                                {...restField}
+                                                name={[name, "yearFrom"]}
+                                                label="From"
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: "Required",
+                                                    },
+                                                    {
+                                                        type: "number",
+                                                        min: 1900,
+                                                        max: 2100,
+                                                        message: "1900–2100",
+                                                    },
+                                                ]}
+                                            >
+                                                <InputNumber
+                                                    className="w-full"
+                                                    placeholder="Year"
+                                                    min={1900}
+                                                    max={2100}
+                                                />
+                                            </Form.Item>
+                                            <Form.Item
+                                                {...restField}
+                                                name={[name, "yearTo"]}
+                                                label="To"
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: "Required",
+                                                    },
+                                                    {
+                                                        type: "number",
+                                                        min: 1900,
+                                                        max: 2100,
+                                                        message: "1900–2100",
+                                                    },
+                                                ]}
+                                            >
+                                                <InputNumber
+                                                    className="w-full"
+                                                    placeholder="Year"
+                                                    min={1900}
+                                                    max={2100}
+                                                />
+                                            </Form.Item>
+                                            <Form.Item
+                                                {...restField}
+                                                name={[name, "description"]}
+                                                label="Description"
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: "Required",
+                                                    },
+                                                ]}
+                                                className="sm:col-span-3"
+                                            >
+                                                <Input placeholder="School / degree / institution" />
+                                            </Form.Item>
+                                        </div>
+                                        <Form.Item className="mb-0 mt-6">
+                                            <Button
+                                                type="text"
+                                                danger
+                                                icon={<MinusCircleOutlined />}
+                                                onClick={() => remove(name)}
+                                            />
+                                        </Form.Item>
+                                    </div>
+                                ))}
+                            </>
+                        )}
+                    </Form.List>
+
+                    <div className="flex justify-end gap-2 pt-4 border-t mt-6">
+                        <Button onClick={closeAddModal}>Cancel</Button>
+                        <PrimaryButton
+                            title="Add student"
+                            type="primary"
+                            htmlType="submit"
+                            loading={isCreating}
+                        />
+                    </div>
+                </Form>
+            </Modal>
         </div>
     );
 }

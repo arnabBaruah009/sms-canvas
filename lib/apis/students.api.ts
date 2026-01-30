@@ -2,6 +2,8 @@ import { apiSetup } from "./api-setup";
 import type {
   GetStudentsResponse,
   GetStudentResponse,
+  CreateStudentDto,
+  CreateStudentResponse,
   Student,
 } from "@/app/dashboard/students/types/student.types";
 
@@ -111,7 +113,22 @@ export const studentsApi = apiSetup.injectEndpoints({
       },
       providesTags: (_result, _error, id) => [{ type: "Student", id }],
     }),
+    createStudent: builder.mutation<
+      CreateStudentResponse,
+      { student: CreateStudentDto }
+    >({
+      query: (body) => ({
+        url: "students",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Student"],
+    }),
   }),
 });
 
-export const { useGetStudentsQuery, useGetStudentByIdQuery } = studentsApi;
+export const {
+  useGetStudentsQuery,
+  useGetStudentByIdQuery,
+  useCreateStudentMutation,
+} = studentsApi;

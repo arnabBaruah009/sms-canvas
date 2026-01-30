@@ -31,3 +31,22 @@ export interface GetStudentResponse {
   data: Student | null;
   message?: string;
 }
+
+export interface CreateStudentDto {
+  name: string;
+  email?: string;
+  password?: string;
+  phone_number?: string;
+  gender?: string;
+  avatar_url?: string;
+  dob: string;
+  address: string;
+  education?: EducationEntry[];
+  about?: string;
+  department?: string;
+}
+
+export interface CreateStudentResponse {
+  data: Student;
+  message?: string;
+}
