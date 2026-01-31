@@ -1,7 +1,5 @@
 import { User } from "../../settings/profile-details/types/profile.types";
 
-export type Gender = "Male" | "Female" | "Other";
-
 export interface EducationEntry {
   yearFrom: number;
   yearTo: number;

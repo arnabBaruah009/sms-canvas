@@ -19,25 +19,12 @@ import dayjs from "dayjs";
 import { UploadImage } from "@/components/upload-image/upload-image";
 import { setIsEditingProfile } from "@/lib/redux/slice/settings.slice";
 import type { RootState } from "@/lib/redux/store";
+import { genderLabels, roleLabels } from "./constants/profile.constant";
 
 const { Option } = Select;
 
 const userRoles: UserRole[] = ["admin", "teacher", "staff", "student"];
 const genders: Gender[] = ["male", "female", "other"];
-
-const roleLabels: Record<UserRole, string> = {
-  admin: "Admin",
-  teacher: "Teacher",
-  staff: "Staff",
-  student: "Student",
-};
-
-const genderLabels: Record<Gender, string> = {
-  male: "Male",
-  female: "Female",
-  other: "Other",
-};
-
 
 export default function UserPage() {
   const [form] = Form.useForm();

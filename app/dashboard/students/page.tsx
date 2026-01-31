@@ -27,6 +27,7 @@ import { PrimaryButton } from "@/components/buttons/primary-button";
 import { UserOutlined, PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { toast } from "react-hot-toast";
+import { genderLabels, roleLabels } from "../settings/profile-details/constants/profile.constant";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -138,7 +139,7 @@ export default function StudentsPage() {
             dataIndex: ["user_id", "gender"],
             key: "gender",
             width: 100,
-            render: (_, record) => record.user_id?.gender,
+            render: (_, record) => record.user_id?.gender ? genderLabels[record.user_id?.gender] : "Not specified",
         },
         {
             title: "DOB",
@@ -235,7 +236,7 @@ export default function StudentsPage() {
                                     </Text>
                                     {selectedStudent.user_id?.role && (
                                         <div className="text-sm text-gray-500">
-                                            {selectedStudent.user_id.role}
+                                            {roleLabels[selectedStudent.user_id.role]}
                                         </div>
                                     )}
                                 </div>
@@ -260,7 +261,7 @@ export default function StudentsPage() {
                                 {selectedStudent.user_id?.gender && (
                                     <>
                                         <Text type="secondary">Gender</Text>
-                                        <Text>{selectedStudent.user_id.gender}</Text>
+                                        <Text>{selectedStudent.user_id.gender ? genderLabels[selectedStudent.user_id.gender] : "Not specified"}</Text>
                                     </>
                                 )}
                                 <Text type="secondary">DOB</Text>
