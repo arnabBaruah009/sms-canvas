@@ -1,33 +1,108 @@
 "use client";
 
 import { useState } from "react";
-import { Table, Drawer, Avatar, Spin, Typography, Tag } from "antd";
+import {
+    Table,
+    Drawer,
+    Avatar,
+    Spin,
+    Typography,
+    Tag,
+    Modal,
+    Form,
+    Input,
+    Select,
+    DatePicker,
+    Button,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
     useGetTeachersQuery,
     useGetTeacherByIdQuery,
+    useCreateTeacherMutation,
 } from "@/lib/apis/teachers.api";
-import type { Teacher } from "./types/teacher.types";
+import type { Teacher, CreateTeacherDto } from "./types/teacher.types";
 import { DashboardHeader } from "@/components/dashboard-header/dashboard-header";
-import { UserOutlined } from "@ant-design/icons";
+import { PrimaryButton } from "@/components/buttons/primary-button";
+import { UploadImage } from "@/components/upload-image/upload-image";
+import { UserOutlined, PlusOutlined } from "@ant-design/icons";
 import { genderLabels } from "../settings/profile-details/constants/profile.constant";
 import dayjs from "dayjs";
+import { toast } from "react-hot-toast";
 
 const { Text } = Typography;
+
+const GENDER_OPTIONS = [
+    { value: "male", label: "Male" },
+    { value: "female", label: "Female" },
+    { value: "other", label: "Other" },
+];
+
+const SUBJECT_OPTIONS = [
+    { value: "Mathematics", label: "Mathematics" },
+    { value: "Science", label: "Science" },
+    { value: "English", label: "English" },
+    { value: "History", label: "History" },
+    { value: "Geography", label: "Geography" },
+    { value: "Physics", label: "Physics" },
+    { value: "Chemistry", label: "Chemistry" },
+    { value: "Biology", label: "Biology" },
+    { value: "Computer Science", label: "Computer Science" },
+    { value: "Art", label: "Art" },
+    { value: "Music", label: "Music" },
+    { value: "Physical Education", label: "Physical Education" },
+];
 
 export default function TeachersPage() {
     const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(
         null
     );
+    const [addModalOpen, setAddModalOpen] = useState(false);
+    const [form] = Form.useForm();
     const { data: teachersData, isLoading: isLoadingList } =
         useGetTeachersQuery();
     const { data: teacherData, isLoading: isLoadingTeacher } =
         useGetTeacherByIdQuery(selectedTeacherId ?? "", {
             skip: !selectedTeacherId,
         });
+    const [createTeacher, { isLoading: isCreating }] =
+        useCreateTeacherMutation();
 
     const teachers = teachersData?.data ?? [];
     const selectedTeacher = teacherData?.data ?? null;
+
+    const openAddModal = () => {
+        form.resetFields();
+        setAddModalOpen(true);
+    };
+
+    const closeAddModal = () => {
+        setAddModalOpen(false);
+        form.resetFields();
+    };
+
+    const handleAddTeacher = async (values: Record<string, unknown>) => {
+        try {
+            const dob = values.dob as dayjs.Dayjs | string;
+            const teacher: CreateTeacherDto = {
+                name: values.name as string,
+                phone_number: (values.phone_number as string) || undefined,
+                gender: (values.gender as string) || undefined,
+                avatar_url: (values.avatar_url as string) || undefined,
+                dob: dayjs.isDayjs(dob) ? dayjs(dob).format("YYYY-MM-DD") : (dob as string),
+                address: values.address as string,
+                subjects: (values.subjects as string[]) ?? [],
+            };
+            await createTeacher({ teacher }).unwrap();
+            toast.success("Teacher added successfully");
+            closeAddModal();
+        } catch (err: unknown) {
+            const message =
+                (err as { data?: { message?: string } })?.data?.message ??
+                "Failed to add teacher";
+            toast.error(message);
+        }
+    };
 
     const columns: ColumnsType<Teacher> = [
         {
@@ -97,18 +172,6 @@ export default function TeachersPage() {
                     "—"
                 ),
         },
-        {
-            title: "Education",
-            dataIndex: "education",
-            key: "education",
-            width: 120,
-            render: (education: Teacher["education"]) =>
-                education?.length ? (
-                    <Text type="secondary">{education.length} entry(ies)</Text>
-                ) : (
-                    "—"
-                ),
-        },
     ];
 
     if (isLoadingList) {
@@ -126,6 +189,14 @@ export default function TeachersPage() {
                 description="Manage and view teacher details"
                 showBackButton={false}
                 bottomBorder={true}
+                buttons={[
+                    <PrimaryButton
+                        key="add-teacher"
+                        title="Add teacher"
+                        icon={<PlusOutlined />}
+                        onClick={openAddModal}
+                    />,
+                ]}
             />
             <div className="flex-1 overflow-auto pt-4 pb-6">
                 <Table<Teacher>
@@ -276,6 +347,97 @@ export default function TeachersPage() {
                     </div>
                 )}
             </Drawer>
+
+            <Modal
+                title="Add teacher"
+                open={addModalOpen}
+                onCancel={closeAddModal}
+                footer={null}
+                width={640}
+                destroyOnHidden
+            >
+                <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={handleAddTeacher}
+                    className="pt-2"
+                >
+                    <div className="grid grid-cols-1 sm:flex gap-x-4 gap-y-0">
+                        <Form.Item name="avatar_url">
+                            <UploadImage listType="picture-circle" />
+                        </Form.Item>
+                        <Form.Item
+                            name="name"
+                            label="Full name"
+                            rules={[{ required: true, message: "Name is required" }]}
+                            className="flex-1"
+                        >
+                            <Input placeholder="e.g. Jane Smith" />
+                        </Form.Item>
+                        <Form.Item
+                            name="phone_number"
+                            label="Phone number"
+                            rules={[
+                                {
+                                    pattern:
+                                        /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/,
+                                    message: "Enter a valid phone number",
+                                },
+                                { required: true, message: "Phone number is required" },
+                            ]}
+                            className="flex-1"
+                        >
+                            <Input placeholder="1234567890" />
+                        </Form.Item>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+                        <Form.Item
+                            name="gender"
+                            label="Gender"
+                            rules={[{ required: true, message: "Gender is required" }]}
+                        >
+                            <Select
+                                placeholder="Select gender"
+                                allowClear
+                                options={GENDER_OPTIONS}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name="dob"
+                            label="Date of birth"
+                            rules={[{ required: true, message: "DOB is required" }]}
+                        >
+                            <DatePicker className="w-full" format="YYYY-MM-DD" />
+                        </Form.Item>
+                    </div>
+                    <Form.Item
+                        name="address"
+                        label="Address"
+                        rules={[{ required: true, message: "Address is required" }]}
+                    >
+                        <Input placeholder="Street, city, state, country" />
+                    </Form.Item>
+                    <Form.Item name="subjects" label="Subjects">
+                        <Select
+                            mode="multiple"
+                            placeholder="Select subjects"
+                            allowClear
+                            options={SUBJECT_OPTIONS}
+                            maxTagCount="responsive"
+                        />
+                    </Form.Item>
+
+                    <div className="flex justify-end gap-2 pt-4 border-t mt-6">
+                        <Button onClick={closeAddModal}>Cancel</Button>
+                        <PrimaryButton
+                            title="Add teacher"
+                            type="primary"
+                            htmlType="submit"
+                            loading={isCreating}
+                        />
+                    </div>
+                </Form>
+            </Modal>
         </div>
     );
 }

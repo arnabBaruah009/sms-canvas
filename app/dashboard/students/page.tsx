@@ -24,6 +24,7 @@ import {
 import type { Student, CreateStudentDto } from "./types/student.types";
 import { DashboardHeader } from "@/components/dashboard-header/dashboard-header";
 import { PrimaryButton } from "@/components/buttons/primary-button";
+import { UploadImage } from "@/components/upload-image/upload-image";
 import { UserOutlined, PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { toast } from "react-hot-toast";
@@ -313,11 +314,15 @@ export default function StudentsPage() {
                         education: [{ yearFrom: undefined, yearTo: undefined, description: "" }],
                     }}
                 >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+                    <div className="grid grid-cols-1 sm:flex gap-x-4 gap-y-0">
+                        <Form.Item name="avatar_url">
+                            <UploadImage listType="picture-circle" />
+                        </Form.Item>
                         <Form.Item
                             name="name"
                             label="Full name"
                             rules={[{ required: true, message: "Name is required" }]}
+                            className="flex-1"
                         >
                             <Input placeholder="e.g. John Doe" />
                         </Form.Item>
@@ -335,8 +340,9 @@ export default function StudentsPage() {
                                     message: "Phone number is required",
                                 }
                             ]}
+                            className="flex-1"
                         >
-                            <Input placeholder="+1 234 567 8900" />
+                            <Input placeholder="1234567890" />
                         </Form.Item>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
