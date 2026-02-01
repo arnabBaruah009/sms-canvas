@@ -9,7 +9,7 @@ export const profileApi = apiSetup.injectEndpoints({
   endpoints: (builder) => ({
     getUser: builder.query<GetProfileResponse, void>({
       query: () => ({
-        url: "api/v1/getUser",
+        url: "api/v1/getProfileDetails",
         method: "GET",
       }),
     }),

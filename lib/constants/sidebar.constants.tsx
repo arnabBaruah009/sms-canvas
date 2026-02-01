@@ -1,4 +1,4 @@
-import { House, Settings, Users, Users2 } from "lucide-react";
+import { House, Settings, ShieldCheck, Users, Users2 } from "lucide-react";
 
 export interface MenuItem {
   icon?: React.ReactNode;
@@ -28,6 +28,11 @@ export const Menu: Menu = {
       icon: <Users2 className="w-5 h-5" />,
       text: "Teachers",
       page: "/dashboard/teachers",
+    },
+    {
+      icon: <ShieldCheck className="w-5 h-5" />,
+      text: "Authorized",
+      page: "/dashboard/authorized",
     },
     {
       icon: <Settings className="w-5 h-5" />,
