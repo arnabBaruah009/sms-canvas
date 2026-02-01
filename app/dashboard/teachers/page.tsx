@@ -10,6 +10,8 @@ import {
 import type { Teacher } from "./types/teacher.types";
 import { DashboardHeader } from "@/components/dashboard-header/dashboard-header";
 import { UserOutlined } from "@ant-design/icons";
+import { genderLabels } from "../settings/profile-details/constants/profile.constant";
+import dayjs from "dayjs";
 
 const { Text } = Typography;
 
@@ -30,43 +32,58 @@ export default function TeachersPage() {
     const columns: ColumnsType<Teacher> = [
         {
             title: "Avatar",
-            dataIndex: "avatar",
+            dataIndex: ["user_id", "avatar_url"],
             key: "avatar",
             width: 80,
             render: (_, record) => (
                 <Avatar
-                    src={record.avatar}
-                    icon={!record.avatar ? <UserOutlined /> : undefined}
-                    alt={record.name}
+                    src={record.user_id?.avatar_url}
+                    icon={!record.user_id?.avatar_url ? <UserOutlined /> : undefined}
+                    alt={record.user_id?.name}
                     className="bg-[var(--primary-color)]"
                 />
             ),
         },
         {
             title: "Name",
-            dataIndex: "name",
+            dataIndex: ["user_id", "name"],
             key: "name",
-            sorter: (a, b) => a.name.localeCompare(b.name),
-            render: (name) => <span className="font-medium">{name}</span>,
+            sorter: (a, b) =>
+                (a.user_id?.name ?? "").localeCompare(b.user_id?.name ?? ""),
+            render: (_, record) => (
+                <span className="font-medium">{record.user_id?.name}</span>
+            ),
         },
         {
-            title: "ID",
-            dataIndex: "id",
-            key: "id",
-            width: 100,
-            render: (id) => <Text type="secondary">ID: {id}</Text>,
-        },
-        {
-            title: "Year",
-            dataIndex: "year",
-            key: "year",
-            width: 80,
+            title: "Phone",
+            dataIndex: ["user_id", "phone_number"],
+            key: "phone",
+            width: 140,
+            render: (_, record) => record.user_id?.phone_number ?? "—",
         },
         {
             title: "Gender",
-            dataIndex: "gender",
+            dataIndex: ["user_id", "gender"],
             key: "gender",
             width: 100,
+            render: (_, record) =>
+                record.user_id?.gender
+                    ? genderLabels[record.user_id.gender]
+                    : "—",
+        },
+        {
+            title: "DOB",
+            dataIndex: "dob",
+            key: "dob",
+            width: 110,
+            render: (_, record) =>
+                record.dob ? dayjs(record.dob).format("DD/MM/YYYY") : "—",
+        },
+        {
+            title: "Address",
+            dataIndex: "address",
+            key: "address",
+            ellipsis: true,
         },
         {
             title: "Subjects",
@@ -75,21 +92,7 @@ export default function TeachersPage() {
             width: 180,
             render: (subjects: string[]) =>
                 subjects?.length ? (
-                    <span className="text-sm">
-                        {subjects.join(", ")}
-                    </span>
-                ) : (
-                    "—"
-                ),
-        },
-        {
-            title: "Experience",
-            dataIndex: "experience",
-            key: "experience",
-            width: 140,
-            render: (experience: Teacher["experience"]) =>
-                experience?.length ? (
-                    <Text type="secondary">{experience.length} role(s)</Text>
+                    <span className="text-sm">{subjects.join(", ")}</span>
                 ) : (
                     "—"
                 ),
@@ -126,7 +129,7 @@ export default function TeachersPage() {
             />
             <div className="flex-1 overflow-auto pt-4 pb-6">
                 <Table<Teacher>
-                    rowKey="id"
+                    rowKey="_id"
                     columns={columns}
                     dataSource={teachers}
                     pagination={{
@@ -135,7 +138,7 @@ export default function TeachersPage() {
                         showTotal: (total) => `Total ${total} teachers`,
                     }}
                     onRow={(record) => ({
-                        onClick: () => setSelectedTeacherId(record.id),
+                        onClick: () => setSelectedTeacherId(record._id),
                         style: { cursor: "pointer" },
                     })}
                     className="shadow-sm rounded-lg overflow-hidden"
@@ -145,7 +148,9 @@ export default function TeachersPage() {
             <Drawer
                 title={
                     selectedTeacher ? (
-                        <span className="font-semibold">{selectedTeacher.name}</span>
+                        <span className="font-semibold">
+                            {selectedTeacher.user_id?.name}
+                        </span>
                     ) : (
                         "Teacher Details"
                     )
@@ -156,7 +161,7 @@ export default function TeachersPage() {
                 onClose={() => setSelectedTeacherId(null)}
                 extra={
                     selectedTeacher && (
-                        <Text type="secondary">ID: {selectedTeacher.id}</Text>
+                        <Text type="secondary">ID: {selectedTeacher._id}</Text>
                     )
                 }
             >
@@ -169,27 +174,28 @@ export default function TeachersPage() {
                         <div>
                             <div className="flex items-center gap-3 mb-4">
                                 <Avatar
-                                    src={selectedTeacher.avatar}
+                                    src={selectedTeacher.user_id?.avatar_url}
                                     icon={
-                                        !selectedTeacher.avatar ? <UserOutlined /> : undefined
+                                        !selectedTeacher.user_id?.avatar_url ? (
+                                            <UserOutlined />
+                                        ) : (
+                                            undefined
+                                        )
                                     }
                                     size={64}
                                     className="bg-[var(--primary-color)]"
                                 />
                                 <div>
                                     <Text strong className="text-base">
-                                        {selectedTeacher.firstName} {selectedTeacher.lastName}
+                                        {selectedTeacher.user_id?.name}
                                     </Text>
-                                    {selectedTeacher.department && (
-                                        <div className="text-sm text-gray-500">
-                                            {selectedTeacher.department}
-                                        </div>
-                                    )}
                                     {selectedTeacher.subjects?.length > 0 && (
                                         <div className="flex flex-wrap gap-1 mt-1">
-                                            {selectedTeacher.subjects.map((sub) => (
-                                                <Tag key={sub}>{sub}</Tag>
-                                            ))}
+                                            {selectedTeacher.subjects.map(
+                                                (sub) => (
+                                                    <Tag key={sub}>{sub}</Tag>
+                                                )
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -201,63 +207,44 @@ export default function TeachersPage() {
                                 Basic Details
                             </Text>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                                <Text type="secondary">First name</Text>
-                                <Text>{selectedTeacher.firstName}</Text>
-                                <Text type="secondary">Last Name</Text>
-                                <Text>{selectedTeacher.lastName}</Text>
-                                <Text type="secondary">Year</Text>
-                                <Text>{selectedTeacher.year}</Text>
-                                <Text type="secondary">Gender</Text>
-                                <Text>{selectedTeacher.gender}</Text>
-                                {selectedTeacher.department && (
-                                    <>
-                                        <Text type="secondary">Department</Text>
-                                        <Text>{selectedTeacher.department}</Text>
-                                    </>
-                                )}
-                                {selectedTeacher.mobile && (
-                                    <>
-                                        <Text type="secondary">Mobile</Text>
-                                        <Text>{selectedTeacher.mobile}</Text>
-                                    </>
-                                )}
-                                {selectedTeacher.email && (
+                                <Text type="secondary">Name</Text>
+                                <Text>{selectedTeacher.user_id?.name}</Text>
+                                <Text type="secondary">Phone</Text>
+                                <Text>
+                                    {selectedTeacher.user_id?.phone_number ?? "—"}
+                                </Text>
+                                {selectedTeacher.user_id?.email && (
                                     <>
                                         <Text type="secondary">Email</Text>
-                                        <Text>{selectedTeacher.email}</Text>
+                                        <Text>
+                                            {selectedTeacher.user_id.email}
+                                        </Text>
                                     </>
                                 )}
+                                {selectedTeacher.user_id?.gender && (
+                                    <>
+                                        <Text type="secondary">Gender</Text>
+                                        <Text>
+                                            {genderLabels[
+                                                selectedTeacher.user_id.gender
+                                            ]}
+                                        </Text>
+                                    </>
+                                )}
+                                <Text type="secondary">DOB</Text>
+                                <Text>
+                                    {selectedTeacher.dob
+                                        ? dayjs(selectedTeacher.dob).format(
+                                            "DD/MM/YYYY"
+                                        )
+                                        : "—"}
+                                </Text>
+                                <Text type="secondary">Address</Text>
+                                <Text className="col-span-2">
+                                    {selectedTeacher.address}
+                                </Text>
                             </div>
                         </div>
-
-                        {selectedTeacher.about && (
-                            <div>
-                                <Text strong className="block mb-2 text-gray-700">
-                                    About
-                                </Text>
-                                <p className="text-sm text-gray-600">
-                                    {selectedTeacher.about}
-                                </p>
-                            </div>
-                        )}
-
-                        {selectedTeacher.experience?.length > 0 && (
-                            <div>
-                                <Text strong className="block mb-2 text-gray-700">
-                                    Experience
-                                </Text>
-                                <ul className="list-none p-0 m-0 space-y-2">
-                                    {selectedTeacher.experience.map((entry, index) => (
-                                        <li key={index} className="text-sm text-gray-600">
-                                            <Text strong>
-                                                {entry.yearFrom} - {entry.yearTo}:
-                                            </Text>{" "}
-                                            {entry.description}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
 
                         {selectedTeacher.education?.length > 0 && (
                             <div>
@@ -265,14 +252,20 @@ export default function TeachersPage() {
                                     Education
                                 </Text>
                                 <ul className="list-none p-0 m-0 space-y-2">
-                                    {selectedTeacher.education.map((entry, index) => (
-                                        <li key={index} className="text-sm text-gray-600">
-                                            <Text strong>
-                                                {entry.yearFrom} - {entry.yearTo}:
-                                            </Text>{" "}
-                                            {entry.description}
-                                        </li>
-                                    ))}
+                                    {selectedTeacher.education.map(
+                                        (entry, index) => (
+                                            <li
+                                                key={index}
+                                                className="text-sm text-gray-600"
+                                            >
+                                                <Text strong>
+                                                    {entry.yearFrom} -{" "}
+                                                    {entry.yearTo}:
+                                                </Text>{" "}
+                                                {entry.description ?? ""}
+                                            </li>
+                                        )
+                                    )}
                                 </ul>
                             </div>
                         )}
