@@ -19,13 +19,13 @@ export function deleteSession() {
   localStorage.removeItem(STORAGE_PROFILE_DATA);
 }
 
-type DecodedToken = {
+export type DecodedToken = {
   id: string;
-  team_id: string | null;
-  type: string;
-  email: string;
-  iat: number;
-  [key: string]: any; // To allow for additional properties if needed
+  phone_number?: string;
+  role: string;
+  school_id?: string;
+  iat?: number;
+  exp?: number;
 };
 
 export const decodeJWT = (token: string): DecodedToken | null => {

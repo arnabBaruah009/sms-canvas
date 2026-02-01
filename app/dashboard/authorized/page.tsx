@@ -185,7 +185,7 @@ export default function AuthorizedPage() {
               },
             ]}
           >
-            <Input placeholder="e.g. +1 234 567 8900" />
+            <Input placeholder="e.g. 1234567890" />
           </Form.Item>
           <div className="flex justify-end gap-2 pt-2">
             <Button onClick={closeAddModal}>Cancel</Button>

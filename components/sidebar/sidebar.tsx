@@ -15,7 +15,8 @@ import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Menu } from "@/lib/constants/sidebar.constants";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { decodeJWT } from "@/lib/utils/sessions.utils";
 
 export function Sidebar() {
   const router = useRouter();
@@ -23,7 +24,16 @@ export function Sidebar() {
   const expanded = useSelector(
     (state: RootState) => state.sidebarSlice.expanded
   );
+  const token = useSelector((state: RootState) => state.authSlice.token);
   const pathname = usePathname();
+
+  const menuItems = useMemo(() => {
+    const decoded = token ? decodeJWT(token) : null;
+    const role = decoded?.role;
+    return Menu.Menu.filter(
+      (item) => !item.roles || (role && item.roles.includes(role))
+    );
+  }, [token]);
 
   useEffect(() => {
     const segments = pathname?.split("/") || [];
@@ -64,14 +74,12 @@ export function Sidebar() {
       <aside className="h-full flex flex-col border-r z-10 bg-primary text-white">
         {/* Header Section - Fixed at top */}
         <div
-          className={`w-full flex flex-row items-center p-4 transition-all ${
-            expanded ? "gap-2 pl-8 justify-between" : "justify-center"
-          }`}
+          className={`w-full flex flex-row items-center p-4 transition-all ${expanded ? "gap-2 pl-8 justify-between" : "justify-center"
+            }`}
         >
           <div
-            className={`flex justify-start items-center ${
-              expanded && "gap-x-2"
-            }`}
+            className={`flex justify-start items-center ${expanded && "gap-x-2"
+              }`}
           >
             {expanded ? (
               <p className="text-md font-Parkinsans">S-M-S</p>
@@ -85,9 +93,8 @@ export function Sidebar() {
             )}
 
             <p
-              className={`text-2xl text-transparent bg-clip-text bg-logo-gradient tracking-wide font-Parkinsans transition-all duration-500 overflow-hidden ${
-                expanded ? "w-max" : "w-0"
-              }`}
+              className={`text-2xl text-transparent bg-clip-text bg-logo-gradient tracking-wide font-Parkinsans transition-all duration-500 overflow-hidden ${expanded ? "w-max" : "w-0"
+                }`}
             >
               S-M-S
             </p>
@@ -95,9 +102,8 @@ export function Sidebar() {
 
           <button
             onClick={() => dispatch(toggleSidebar())}
-            className={`rounded-lg hover:bg-gray-400 transition-all overflow-hidden ${
-              expanded ? "p-1.5" : "w-0"
-            }`}
+            className={`rounded-lg hover:bg-gray-400 transition-all overflow-hidden ${expanded ? "p-1.5" : "w-0"
+              }`}
           >
             {expanded ? <ChevronFirst /> : <ChevronLast />}
           </button>
@@ -109,7 +115,7 @@ export function Sidebar() {
             className={`w-full transition-all ${expanded ? "pr-4 pl-2" : ""}`}
           >
             <ul className="flex-1 px-2 mb-4">
-              {Menu.Menu.map((item) => {
+              {menuItems.map((item) => {
                 const sidebarItem = (
                   <SidebarItem
                     key={item.page}

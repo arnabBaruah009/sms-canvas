@@ -6,6 +6,8 @@ export interface MenuItem {
   page: string;
   children?: MenuItem[];
   group?: string;
+  /** When set, this item is only shown when the user's role is in this array */
+  roles?: string[];
 }
 
 export interface Menu {
@@ -33,6 +35,7 @@ export const Menu: Menu = {
       icon: <ShieldCheck className="w-5 h-5" />,
       text: "Authorized",
       page: "/dashboard/authorized",
+      roles: ["super_admin"],
     },
     {
       icon: <Settings className="w-5 h-5" />,
