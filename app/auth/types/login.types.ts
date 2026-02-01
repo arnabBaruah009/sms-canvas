@@ -1,11 +1,11 @@
 export type Login_Input_Type = {
-  email: string;
+  phone: string;
   password: string;
 };
 
 export interface LoginRequest {
   user: {
-    email: string;
+    phone: string;
     password: string;
   };
 }

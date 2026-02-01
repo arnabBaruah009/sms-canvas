@@ -12,7 +12,7 @@ interface InputProps {
 }
 
 export interface InputProps_Auth extends InputProps {
-  type: "email" | "password";
+  type: "email" | "password" | "tel";
   isVisible?: boolean;
   setIsVisible?: React.Dispatch<React.SetStateAction<boolean>>;
 }

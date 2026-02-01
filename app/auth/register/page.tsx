@@ -20,7 +20,7 @@ export default function Register() {
   const [isConfirmPasswordVisible, setConfirmPasswordIsVisible] =
     useState<boolean>(false);
   const [registerInputs, setRegisterInputs] = useState<Register_Input_Type>({
-    email: "",
+    phone: "",
     password: "",
     confirm_password: "",
   });
@@ -40,10 +40,10 @@ export default function Register() {
 
     // Check for validation errors
     if (
-      checkValidation_Register("email") ||
+      checkValidation_Register("phone") ||
       checkValidation_Register("password") ||
       checkValidation_Register("confirm_password") ||
-      registerInputs.email === "" ||
+      registerInputs.phone === "" ||
       registerInputs.password === "" ||
       registerInputs.confirm_password === ""
     ) {
@@ -79,23 +79,23 @@ export default function Register() {
       />
       <div className="my-10 mt-16 flex flex-col justify-between gap-4 w-full sm:w-4/5">
         <Input_Auth
-          type="email"
-          name="email"
-          value={registerInputs.email}
+          type="tel"
+          name="phone"
+          value={registerInputs.phone}
           onChange={onchange}
           isInvalid={
-            checkValidation_Register("email") ||
-            (isRegisterClicked && registerInputs.email === "")
+            checkValidation_Register("phone") ||
+            (isRegisterClicked && registerInputs.phone === "")
           }
           onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
             if (e.key === "Enter") handleRegister();
           }}
           errorMessage={
-            isRegisterClicked && registerInputs.email === ""
-              ? "Email is required"
-              : "Invalid email"
+            isRegisterClicked && registerInputs.phone === ""
+              ? "Phone number is required"
+              : "Phone number must be 10 digits"
           }
-          placeholder="Enter your email"
+          placeholder="Enter your 10-digit phone number"
         />
 
         <Input_Auth

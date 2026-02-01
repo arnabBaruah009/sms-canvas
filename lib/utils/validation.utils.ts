@@ -3,11 +3,16 @@ import {
   EMAIL_REGEX,
   PASSWORD_REGEX,
   PASSWORDVALIDATION_REGEX,
+  PHONE_REGEX,
 } from "@/lib/constants/validation.constants";
 import { RcFile } from "antd/es/upload";
 import toast from "react-hot-toast";
 
 export const isValidEmail = (email: string): boolean => EMAIL_REGEX.test(email);
+
+/** Returns true if value is exactly 10 digits. */
+export const isValidPhone = (phone: string): boolean => PHONE_REGEX.test(phone);
+
 export const isValidPassword = (password: string): boolean =>
   PASSWORD_REGEX.test(password);
 
@@ -24,6 +29,10 @@ export const checkValidation = <T extends Validation_Test_Input>(
   switch (name) {
     case "email":
       validationTest = !isValidEmail(inputValue);
+      break;
+
+    case "phone":
+      validationTest = !isValidPhone(inputValue);
       break;
 
     case "password":

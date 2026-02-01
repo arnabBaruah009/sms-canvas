@@ -20,7 +20,7 @@ export default function Login() {
   const dispatch = useDispatch();
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [loginInputs, setLoginInputs] = useState<Login_Input_Type>({
-    email: "",
+    phone: "",
     password: "",
   });
   const [login, { isLoading }] = useLoginMutation();
@@ -38,8 +38,8 @@ export default function Login() {
     setIsLoginClicked(true);
 
     if (
-      checkValidation_Login("email") ||
-      loginInputs.email === "" ||
+      checkValidation_Login("phone") ||
+      loginInputs.phone === "" ||
       loginInputs.password === ""
     ) {
       return;
@@ -81,23 +81,23 @@ export default function Login() {
       <Heading title="Welcome back!" subtitle="Log in to your account" />
       <div className="my-10 mt-16 flex flex-col justify-between gap-4 w-full sm:w-4/5">
         <Input_Auth
-          type="email"
-          name="email"
-          value={loginInputs.email}
+          type="tel"
+          name="phone"
+          value={loginInputs.phone}
           onChange={onchange}
           isInvalid={
-            checkValidation_Login("email") ||
-            (isLoginClicked && loginInputs.email === "")
+            checkValidation_Login("phone") ||
+            (isLoginClicked && loginInputs.phone === "")
           }
           onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
             if (e.key === "Enter") handleLogin();
           }}
           errorMessage={
-            isLoginClicked && loginInputs.email === ""
-              ? "Email is required"
-              : "Invalid email"
+            isLoginClicked && loginInputs.phone === ""
+              ? "Phone number is required"
+              : "Phone number must be 10 digits"
           }
-          placeholder="Enter your email"
+          placeholder="Enter your 10-digit phone number"
         />
 
         <Input_Auth

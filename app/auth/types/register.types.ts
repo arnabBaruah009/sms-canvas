@@ -1,12 +1,12 @@
 export type Register_Input_Type = {
-  email: string;
+  phone: string;
   password: string;
   confirm_password: string;
 };
 
 export interface RegisterRequest {
   user: {
-    email: string;
+    phone: string;
     password: string;
   };
 }

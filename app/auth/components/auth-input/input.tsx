@@ -30,6 +30,8 @@ export const Input_Auth = ({
       return (
         <MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
       );
+    } else if (type === "tel") {
+      return null;
     }
     return endContent;
   };
