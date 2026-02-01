@@ -14,18 +14,20 @@ import {
     Select,
     DatePicker,
     Button,
+    Popconfirm,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
     useGetStudentsQuery,
     useGetStudentByIdQuery,
     useCreateStudentMutation,
+    useDeleteStudentMutation,
 } from "@/lib/apis/students.api";
 import type { Student, CreateStudentDto } from "./types/student.types";
 import { DashboardHeader } from "@/components/dashboard-header/dashboard-header";
 import { PrimaryButton } from "@/components/buttons/primary-button";
 import { UploadImage } from "@/components/upload-image/upload-image";
-import { UserOutlined, PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import { UserOutlined, PlusOutlined, MinusCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { toast } from "react-hot-toast";
 import { genderLabels, roleLabels } from "../settings/profile-details/constants/profile.constant";
@@ -45,6 +47,7 @@ export default function StudentsPage() {
     const [form] = Form.useForm();
     const { data: studentsData, isLoading: isLoadingList } = useGetStudentsQuery();
     const [createStudent, { isLoading: isCreating }] = useCreateStudentMutation();
+    const [deleteStudent, { isLoading: isDeleting }] = useDeleteStudentMutation();
     const { data: studentData, isLoading: isLoadingStudent } =
         useGetStudentByIdQuery(selectedStudentId ?? "", {
             skip: !selectedStudentId,
@@ -154,6 +157,39 @@ export default function StudentsPage() {
             dataIndex: "address",
             key: "address",
             ellipsis: true,
+        },
+        {
+            title: "Action",
+            key: "action",
+            width: 80,
+            fixed: "right",
+            render: (_, record) => (
+                <Popconfirm
+                    title="Delete student"
+                    description="Are you sure you want to delete this student?"
+                    onConfirm={(e) => {
+                        e?.stopPropagation();
+                        deleteStudent(record._id)
+                            .unwrap()
+                            .then(() => toast.success("Student deleted"))
+                            .catch((err: { data?: { message?: string } }) =>
+                                toast.error(err?.data?.message ?? "Failed to delete student")
+                            );
+                    }}
+                    onCancel={(e) => e?.stopPropagation()}
+                    okText="Delete"
+                    okButtonProps={{ danger: true }}
+                >
+                    <Button
+                        type="text"
+                        danger
+                        icon={<DeleteOutlined />}
+                        loading={isDeleting}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label="Delete student"
+                    />
+                </Popconfirm>
+            ),
         },
     ];
 

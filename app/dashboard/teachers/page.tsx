@@ -14,18 +14,20 @@ import {
     Select,
     DatePicker,
     Button,
+    Popconfirm,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
     useGetTeachersQuery,
     useGetTeacherByIdQuery,
     useCreateTeacherMutation,
+    useDeleteTeacherMutation,
 } from "@/lib/apis/teachers.api";
 import type { Teacher, CreateTeacherDto } from "./types/teacher.types";
 import { DashboardHeader } from "@/components/dashboard-header/dashboard-header";
 import { PrimaryButton } from "@/components/buttons/primary-button";
 import { UploadImage } from "@/components/upload-image/upload-image";
-import { UserOutlined, PlusOutlined } from "@ant-design/icons";
+import { UserOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { genderLabels } from "../settings/profile-details/constants/profile.constant";
 import dayjs from "dayjs";
 import { toast } from "react-hot-toast";
@@ -67,6 +69,8 @@ export default function TeachersPage() {
         });
     const [createTeacher, { isLoading: isCreating }] =
         useCreateTeacherMutation();
+    const [deleteTeacher, { isLoading: isDeleting }] =
+        useDeleteTeacherMutation();
 
     const teachers = teachersData?.data ?? [];
     const selectedTeacher = teacherData?.data ?? null;
@@ -171,6 +175,40 @@ export default function TeachersPage() {
                 ) : (
                     "—"
                 ),
+        },
+        {
+            title: "Action",
+            key: "action",
+            width: 80,
+            fixed: "right",
+            align: "center",
+            render: (_, record) => (
+                <Popconfirm
+                    title="Delete teacher"
+                    description="Are you sure you want to delete this teacher?"
+                    onConfirm={(e) => {
+                        e?.stopPropagation();
+                        deleteTeacher(record._id)
+                            .unwrap()
+                            .then(() => toast.success("Teacher deleted"))
+                            .catch((err: { data?: { message?: string } }) =>
+                                toast.error(err?.data?.message ?? "Failed to delete teacher")
+                            );
+                    }}
+                    onCancel={(e) => e?.stopPropagation()}
+                    okText="Delete"
+                    okButtonProps={{ danger: true }}
+                >
+                    <Button
+                        type="text"
+                        danger
+                        icon={<DeleteOutlined />}
+                        loading={isDeleting}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label="Delete teacher"
+                    />
+                </Popconfirm>
+            ),
         },
     ];
 
