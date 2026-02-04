@@ -4,6 +4,7 @@ import { apiSetup } from "@/lib/apis/api-setup";
 import authSlice from "@/lib/redux/slice/auth.slice";
 import sidebarSlice from "@/lib/redux/slice/sidebar.slice";
 import settingsSlice from "@/lib/redux/slice/settings.slice";
+import studentsSlice from "@/lib/redux/slice/students.slice";
 
 // Configure the store
 export const store = configureStore({
@@ -12,6 +13,7 @@ export const store = configureStore({
     authSlice,
     sidebarSlice,
     settingsSlice,
+    studentsSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSetup.middleware),

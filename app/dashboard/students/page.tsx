@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
     Table,
     Drawer,
@@ -31,6 +32,11 @@ import { UserOutlined, PlusOutlined, MinusCircleOutlined, DeleteOutlined } from 
 import dayjs from "dayjs";
 import { toast } from "react-hot-toast";
 import { genderLabels, roleLabels } from "../settings/profile-details/constants/profile.constant";
+import type { RootState } from "@/lib/redux/store";
+import {
+    deleteStudentsFilterKey,
+    setStudentsFilters,
+} from "@/lib/redux/slice/students.slice";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -44,8 +50,83 @@ const GENDER_OPTIONS = [
 export default function StudentsPage() {
     const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
     const [addModalOpen, setAddModalOpen] = useState(false);
+    const dispatch = useDispatch();
+    const studentsFilters = useSelector(
+        (state: RootState) => state.studentsSlice.studentsFilters
+    );
+    const [searchInput, setSearchInput] = useState(
+        studentsFilters.searchQuery ?? ""
+    );
+    const [selectedGender, setSelectedGender] = useState<string | undefined>(
+        studentsFilters.gender
+    );
+    const [dobRange, setDobRange] = useState<
+        [dayjs.Dayjs | null, dayjs.Dayjs | null] | null
+    >(() => {
+        const from = studentsFilters.dobRange?.from
+            ? dayjs(studentsFilters.dobRange.from)
+            : null;
+        const to = studentsFilters.dobRange?.to
+            ? dayjs(studentsFilters.dobRange.to)
+            : null;
+        return from || to ? [from, to] : null;
+    });
+    const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [form] = Form.useForm();
-    const { data: studentsData, isLoading: isLoadingList } = useGetStudentsQuery();
+
+    useEffect(() => {
+        return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    const handleSearch = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = e.target.value;
+            setSearchInput(value);
+
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+            }
+
+            debounceTimeoutRef.current = setTimeout(() => {
+                const trimmed = value.trim();
+                if (trimmed) {
+                    dispatch(
+                        setStudentsFilters({
+                            ...studentsFilters,
+                            searchQuery: trimmed,
+                        })
+                    );
+                } else {
+                    dispatch(deleteStudentsFilterKey("searchQuery"));
+                }
+            }, 500);
+        },
+        [dispatch, studentsFilters]
+    );
+
+    const handleGenderChange = useCallback(
+        (value?: string) => {
+            setSelectedGender(value);
+            if (value) {
+                dispatch(
+                    setStudentsFilters({
+                        ...studentsFilters,
+                        gender: value,
+                    })
+                );
+            } else {
+                dispatch(deleteStudentsFilterKey("gender"));
+            }
+        },
+        [dispatch, studentsFilters]
+    );
+
+    const { data: studentsData, isLoading: isLoadingList } =
+        useGetStudentsQuery(studentsFilters);
     const [createStudent, { isLoading: isCreating }] = useCreateStudentMutation();
     const [deleteStudent, { isLoading: isDeleting }] = useDeleteStudentMutation();
     const { data: studentData, isLoading: isLoadingStudent } =
@@ -124,13 +205,6 @@ export default function StudentsPage() {
                 <span className="font-medium">{record.user_id?.name}</span>
             ),
         },
-        // {
-        //     title: "ID",
-        //     dataIndex: "_id",
-        //     key: "_id",
-        //     width: 120,
-        //     render: (id) => <Text type="secondary">ID: {id}</Text>,
-        // },
         {
             title: "Mobile",
             dataIndex: ["user_id", "phone_number"],
@@ -218,6 +292,23 @@ export default function StudentsPage() {
                 ]}
             />
             <div className="flex-1 overflow-auto pt-4 pb-6">
+                <div className="flex flex-wrap items-center gap-3 mb-4">
+                    <Input
+                        placeholder="Search by name or phone"
+                        allowClear
+                        value={searchInput}
+                        onChange={handleSearch}
+                        className="max-w-[250px] flex-1"
+                    />
+                    <Select
+                        placeholder="Gender"
+                        allowClear
+                        options={GENDER_OPTIONS}
+                        value={selectedGender}
+                        onChange={handleGenderChange}
+                        className="min-w-[160px]"
+                    />
+                </div>
                 <Table<Student>
                     rowKey="_id"
                     columns={columns}

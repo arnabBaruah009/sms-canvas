@@ -1,3 +1,4 @@
+import { StudentFiltersOps } from "@/app/dashboard/students/types/student-filters.types";
 import { apiSetup } from "./api-setup";
 import type {
   GetStudentsResponse,
@@ -9,10 +10,11 @@ import type {
 
 export const studentsApi = apiSetup.injectEndpoints({
   endpoints: (builder) => ({
-    getStudents: builder.query<GetStudentsResponse, void>({
-      query: () => ({
+    getStudents: builder.query<GetStudentsResponse, StudentFiltersOps | void>({
+      query: (body) => ({
         url: "api/v1/students",
-        method: "GET",
+        method: "POST",
+        body: { filters: body },
       }),
       providesTags: ["Student"],
     }),
