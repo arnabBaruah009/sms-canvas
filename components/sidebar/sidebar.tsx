@@ -1,4 +1,4 @@
-import { ChevronFirst, ChevronLast } from "lucide-react";
+import { ChevronFirst, ChevronLast, LogOut, User } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/redux/store";
 import {
@@ -17,6 +17,8 @@ import { Menu } from "@/lib/constants/sidebar.constants";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { decodeJWT } from "@/lib/utils/sessions.utils";
+import { useGetUserQuery } from "@/lib/apis/profile.api";
+import { Avatar, Button, Tooltip } from "antd";
 
 export function Sidebar() {
   const router = useRouter();
@@ -26,6 +28,8 @@ export function Sidebar() {
   );
   const token = useSelector((state: RootState) => state.authSlice.token);
   const pathname = usePathname();
+  const { data } = useGetUserQuery();
+  const profile = data?.data;
 
   const menuItems = useMemo(() => {
     const decoded = token ? decodeJWT(token) : null;
@@ -138,6 +142,55 @@ export function Sidebar() {
               })}
             </ul>
           </div>
+        </div>
+
+        <div
+          className={`w-full flex items-center gap-3 p-4 ${expanded ? "justify-start pl-1" : "justify-center"
+            }`}
+        >
+          {profile?.avatar_url ? (
+            <Avatar className="size-8" src={profile.avatar_url} />
+          ) : (
+            <Avatar className="size-8">
+              {profile?.name ? (
+                `${profile?.name?.charAt(0)}`
+              ) : (
+                <User className="size-6" />
+              )}
+            </Avatar>
+          )}
+          {expanded && (
+            <div
+              className={`flex flex-row grow justify-between items-center transition-all duration-500 ${!expanded && "hidden"
+                }`}
+            >
+              <div className="flex flex-col">
+                <span
+                  className={`overflow-hidden transition-all duration-500 text-xs font-medium ${expanded ? "w-40" : "w-0"
+                    }`}
+                >
+                  {profile?.name ?? ""}
+                </span>
+                <span
+                  className={`overflow-hidden transition-all duration-500 text-xs ${expanded ? "w-40" : "w-0"
+                    }`}
+                  style={{ whiteSpace: "nowrap", textOverflow: "ellipsis" }}
+                >
+                  {profile?.phone_number ?? ""}
+                </span>
+              </div>
+              <Tooltip title="Logout">
+                <Button
+                  type="text"
+                  shape="circle"
+                  icon={<LogOut className="size-4 text-white" />}
+                  disabled={isLoading}
+                  loading={isLoading}
+                  onClick={handleLogout}
+                />
+              </Tooltip>
+            </div>
+          )}
         </div>
       </aside>
     </div>
