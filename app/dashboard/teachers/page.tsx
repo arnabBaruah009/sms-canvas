@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
     Table,
     Drawer,
@@ -24,6 +25,11 @@ import {
     useDeleteTeacherMutation,
 } from "@/lib/apis/teachers.api";
 import type { Teacher, CreateTeacherDto } from "./types/teacher.types";
+import type { RootState } from "@/lib/redux/store";
+import {
+    deleteTeachersFilterKey,
+    setTeachersFilters,
+} from "@/lib/redux/slice/teachers.slice";
 import { DashboardHeader } from "@/components/dashboard-header/dashboard-header";
 import { PrimaryButton } from "@/components/buttons/primary-button";
 import { UploadImage } from "@/components/upload-image/upload-image";
@@ -60,9 +66,20 @@ export default function TeachersPage() {
         null
     );
     const [addModalOpen, setAddModalOpen] = useState(false);
+    const dispatch = useDispatch();
+    const teachersFilters = useSelector(
+        (state: RootState) => state.teachersSlice.teachersFilters
+    );
+    const [searchInput, setSearchInput] = useState(
+        teachersFilters.searchQuery ?? ""
+    );
+    const [selectedGender, setSelectedGender] = useState<string | undefined>(
+        teachersFilters.gender
+    );
+    const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [form] = Form.useForm();
     const { data: teachersData, isLoading: isLoadingList } =
-        useGetTeachersQuery();
+        useGetTeachersQuery(teachersFilters);
     const { data: teacherData, isLoading: isLoadingTeacher } =
         useGetTeacherByIdQuery(selectedTeacherId ?? "", {
             skip: !selectedTeacherId,
@@ -71,6 +88,57 @@ export default function TeachersPage() {
         useCreateTeacherMutation();
     const [deleteTeacher, { isLoading: isDeleting }] =
         useDeleteTeacherMutation();
+
+    useEffect(() => {
+        return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    const handleSearch = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = e.target.value;
+            setSearchInput(value);
+
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+            }
+
+            debounceTimeoutRef.current = setTimeout(() => {
+                const trimmed = value.trim();
+                if (trimmed) {
+                    dispatch(
+                        setTeachersFilters({
+                            ...teachersFilters,
+                            searchQuery: trimmed,
+                        })
+                    );
+                } else {
+                    dispatch(deleteTeachersFilterKey("searchQuery"));
+                }
+            }, 500);
+        },
+        [dispatch, teachersFilters]
+    );
+
+    const handleGenderChange = useCallback(
+        (value?: string) => {
+            setSelectedGender(value);
+            if (value) {
+                dispatch(
+                    setTeachersFilters({
+                        ...teachersFilters,
+                        gender: value,
+                    })
+                );
+            } else {
+                dispatch(deleteTeachersFilterKey("gender"));
+            }
+        },
+        [dispatch, teachersFilters]
+    );
 
     const teachers = teachersData?.data ?? [];
     const selectedTeacher = teacherData?.data ?? null;
@@ -237,6 +305,23 @@ export default function TeachersPage() {
                 ]}
             />
             <div className="flex-1 overflow-auto pt-4 pb-6">
+                <div className="flex flex-wrap items-center gap-3 mb-4">
+                    <Input
+                        placeholder="Search by name or phone"
+                        allowClear
+                        value={searchInput}
+                        onChange={handleSearch}
+                        className="max-w-[250px] flex-1"
+                    />
+                    <Select
+                        placeholder="Gender"
+                        allowClear
+                        options={GENDER_OPTIONS}
+                        value={selectedGender}
+                        onChange={handleGenderChange}
+                        className="min-w-[160px]"
+                    />
+                </div>
                 <Table<Teacher>
                     rowKey="_id"
                     columns={columns}

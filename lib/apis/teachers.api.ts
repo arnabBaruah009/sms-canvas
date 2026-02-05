@@ -1,4 +1,5 @@
 import { apiSetup } from "./api-setup";
+import { TeacherFiltersOps } from "../../app/dashboard/teachers/types/teacher-filters.types";
 import type {
   GetTeachersResponse,
   GetTeacherResponse,
@@ -10,17 +11,18 @@ import type {
 
 export const teachersApi = apiSetup.injectEndpoints({
   endpoints: (builder) => ({
-    getTeachers: builder.query<GetTeachersResponse, void>({
-      query: () => ({
+    getTeachers: builder.query<GetTeachersResponse, TeacherFiltersOps | void>({
+      query: (body) => ({
         url: "api/v1/teachers",
-        method: "GET",
+        method: "POST",
+        body: { filters: body },
       }),
       providesTags: (result) =>
         result?.data
           ? [
-              ...result.data.map(({ _id }) => ({ type: "Teacher" as const, id: _id })),
-              { type: "Teacher", id: "LIST" },
-            ]
+            ...result.data.map(({ _id }) => ({ type: "Teacher" as const, id: _id })),
+            { type: "Teacher", id: "LIST" },
+          ]
           : [{ type: "Teacher", id: "LIST" }],
     }),
     getTeacherById: builder.query<GetTeacherResponse, string>({
@@ -35,7 +37,7 @@ export const teachersApi = apiSetup.injectEndpoints({
       { teacher: CreateTeacherDto }
     >({
       query: (body) => ({
-        url: "api/v1/teachers",
+        url: "api/v1/teachers/create",
         method: "POST",
         body,
       }),

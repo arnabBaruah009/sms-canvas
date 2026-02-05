@@ -30,7 +30,7 @@ export const studentsApi = apiSetup.injectEndpoints({
       { student: CreateStudentDto }
     >({
       query: (body) => ({
-        url: "api/v1/students",
+        url: "api/v1/students/create",
         method: "POST",
         body,
       }),
