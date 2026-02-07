@@ -242,12 +242,12 @@ export default function UserPage() {
                 <p className="text-sm text-gray-600">{profile.phone_number}</p>
               </div>
               <div className="flex flex-wrap gap-2">
+                <Tag color="blue">{roleLabels[profile.role] || "Admin"}</Tag>
                 {profile.isEmailVerified ? (
-                  <Tag color="green">Email Verified</Tag>
+                  <Tag color="green">Verified</Tag>
                 ) : (
-                  <Tag color="orange">Email Not Verified</Tag>
+                  <Tag color="orange">Not Verified</Tag>
                 )}
-                <Tag color="blue">{roleLabels[profile.role]}</Tag>
               </div>
             </div>
           </div>
