@@ -1,17 +1,13 @@
 import { User } from "../../settings/profile-details/types/profile.types";
 
-export interface EducationEntry {
-  yearFrom: number;
-  yearTo: number;
-  description: string;
-}
-
 export interface Student {
   _id: string;
   user_id: User;
   dob: string;
   address: string;
-  education: EducationEntry[];
+  class: string;
+  section: string;
+  rollNumber: number;
   createdAt: string;
   updatedAt: string;
   __v: number;
@@ -36,7 +32,9 @@ export interface CreateStudentDto {
   avatar_url?: string;
   dob: string;
   address: string;
-  education?: EducationEntry[];
+  class?: string;
+  section?: string;
+  rollNumber?: string;
   about?: string;
   department?: string;
 }

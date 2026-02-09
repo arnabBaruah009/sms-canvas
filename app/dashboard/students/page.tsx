@@ -28,7 +28,7 @@ import type { Student, CreateStudentDto } from "./types/student.types";
 import { DashboardHeader } from "@/components/dashboard-header/dashboard-header";
 import { PrimaryButton } from "@/components/buttons/primary-button";
 import { UploadImage } from "@/components/upload-image/upload-image";
-import { UserOutlined, PlusOutlined, MinusCircleOutlined, DeleteOutlined } from "@ant-design/icons";
+import { UserOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { toast } from "react-hot-toast";
 import { genderLabels, roleLabels } from "../settings/profile-details/constants/profile.constant";
@@ -150,11 +150,6 @@ export default function StudentsPage() {
     const handleAddStudent = async (values: Record<string, unknown>) => {
         try {
             const dob = values.dob as dayjs.Dayjs | string;
-            const education = values.education as Array<{
-                yearFrom?: number;
-                yearTo?: number;
-                description?: string;
-            }> | undefined;
             const student: CreateStudentDto = {
                 name: values.name as string,
                 phone_number: (values.phone_number as string) || undefined,
@@ -162,13 +157,10 @@ export default function StudentsPage() {
                 avatar_url: (values.avatar_url as string) || undefined,
                 dob: dayjs.isDayjs(dob) ? dob.format("YYYY-MM-DD") : (dob as string),
                 address: values.address as string,
+                class: (values.class as string) || undefined,
+                section: (values.section as string) || undefined,
+                rollNumber: (values.rollNumber as string) || undefined,
                 about: (values.about as string) || undefined,
-                education: education?.filter(
-                    (e) =>
-                        typeof e?.yearFrom === "number" &&
-                        typeof e?.yearTo === "number" &&
-                        e?.description
-                ) as CreateStudentDto["education"],
             };
             await createStudent({ student }).unwrap();
             toast.success("Student added successfully");
@@ -204,6 +196,14 @@ export default function StudentsPage() {
             render: (_, record) => (
                 <span className="font-medium">{record.user_id?.name}</span>
             ),
+        },
+        {
+            title: "Class",
+            dataIndex: "class",
+            key: "class",
+            width: 100,
+            align: "center",
+            render: (_, record) => <p>{record.class} {record.section}</p>,
         },
         {
             title: "Mobile",
@@ -340,7 +340,7 @@ export default function StudentsPage() {
                 onClose={() => setSelectedStudentId(null)}
                 extra={
                     selectedStudent && (
-                        <Text type="secondary">ID: {selectedStudent._id}</Text>
+                        <Text type="secondary">Roll number: {selectedStudent.rollNumber}</Text>
                     )
                 }
             >
@@ -394,28 +394,14 @@ export default function StudentsPage() {
                                 )}
                                 <Text type="secondary">DOB</Text>
                                 <Text>{selectedStudent.dob}</Text>
+                                <Text type="secondary">Class</Text>
+                                <Text>{selectedStudent.class} {selectedStudent.section}</Text>
+                                <Text type="secondary">Roll number</Text>
+                                <Text>{selectedStudent.rollNumber}</Text>
                                 <Text type="secondary">Address</Text>
-                                <Text className="col-span-2">{selectedStudent.address}</Text>
+                                <Text>{selectedStudent.address}</Text>
                             </div>
                         </div>
-
-                        {selectedStudent.education && selectedStudent.education.length > 0 && (
-                            <div>
-                                <Text strong className="block mb-2 text-gray-700">
-                                    Education
-                                </Text>
-                                <ul className="list-none p-0 m-0 space-y-2">
-                                    {selectedStudent.education.map((entry, index) => (
-                                        <li key={index} className="text-sm text-gray-600">
-                                            <Text strong>
-                                                {entry.yearFrom} - {entry.yearTo}:
-                                            </Text>{" "}
-                                            Class: {entry.description}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
                     </div>
                 ) : (
                     <div className="text-center text-gray-500 py-8">
@@ -437,9 +423,6 @@ export default function StudentsPage() {
                     layout="vertical"
                     onFinish={handleAddStudent}
                     className="pt-2"
-                    initialValues={{
-                        education: [{ yearFrom: undefined, yearTo: undefined, description: "" }],
-                    }}
                 >
                     <div className="grid grid-cols-1 sm:flex gap-x-4 gap-y-0">
                         <Form.Item name="avatar_url">
@@ -499,101 +482,34 @@ export default function StudentsPage() {
                         <TextArea rows={3} placeholder="Brief bio or notes" />
                     </Form.Item>
 
-                    <Form.List name="education">
-                        {(fields, { add, remove }) => (
-                            <>
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-medium text-gray-700">
-                                        Education
-                                    </span>
-                                    <Button
-                                        type="dashed"
-                                        onClick={() => add()}
-                                        icon={<PlusOutlined />}
-                                        className="mb-2"
-                                        size="small"
-                                    />
-                                </div>
-                                {fields.map(({ key, name, ...restField }) => (
-                                    <div
-                                        key={key}
-                                        className="flex gap-2 items-center p-3 mb-2 rounded border border-gray-200 bg-gray-50/50"
-                                    >
-                                        <Form.Item
-                                            {...restField}
-                                            name={[name, "yearFrom"]}
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message: "Required",
-                                                },
-                                                {
-                                                    type: "number",
-                                                    min: 1900,
-                                                    max: 2100,
-                                                    message: "1900–2100",
-                                                },
-                                            ]}
-                                            style={{ marginBottom: 0, flex: '0 0 100px' }}
-                                        >
-                                            <InputNumber
-                                                style={{ width: "100%" }}
-                                                placeholder="From"
-                                                min={1900}
-                                                max={2100}
-                                            />
-                                        </Form.Item>
-                                        <span className="mx-1">-</span>
-                                        <Form.Item
-                                            {...restField}
-                                            name={[name, "yearTo"]}
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message: "Required",
-                                                },
-                                                {
-                                                    type: "number",
-                                                    min: 1900,
-                                                    max: 2100,
-                                                    message: "1900–2100",
-                                                },
-                                            ]}
-                                            style={{ marginBottom: 0, flex: '0 0 100px' }}
-                                        >
-                                            <InputNumber
-                                                style={{ width: "100%" }}
-                                                placeholder="To"
-                                                min={1900}
-                                                max={2100}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item
-                                            {...restField}
-                                            name={[name, "description"]}
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message: "Required",
-                                                },
-                                            ]}
-                                            style={{ marginBottom: 0, flex: '1 1 200px' }}
-                                        >
-                                            <Input placeholder="Class" />
-                                        </Form.Item>
-                                        <Form.Item style={{ marginBottom: 0 }}>
-                                            <Button
-                                                type="text"
-                                                danger
-                                                icon={<MinusCircleOutlined />}
-                                                onClick={() => remove(name)}
-                                            />
-                                        </Form.Item>
-                                    </div>
-                                ))}
-                            </>
-                        )}
-                    </Form.List>
+                    <div className="mb-4">
+                        <span className="text-sm font-medium text-gray-700 block mb-2">
+                            Education
+                        </span>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-2">
+                            <Form.Item
+                                name="class"
+                                label="Class"
+                                rules={[{ required: true, message: "Class is required" }]}
+                            >
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                name="section"
+                                label="Section"
+                                rules={[{ required: true, message: "Section is required" }]}
+                            >
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                name="rollNumber"
+                                label="Roll number"
+                                rules={[{ required: true, message: "Roll number is required" }]}
+                            >
+                                <Input />
+                            </Form.Item>
+                        </div>
+                    </div>
 
                     <div className="flex justify-end gap-2 pt-4 border-t mt-6">
                         <Button onClick={closeAddModal}>Cancel</Button>
