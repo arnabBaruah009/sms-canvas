@@ -32,7 +32,6 @@ export function AddSubject() {
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Subjects</h2>
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <Input
           placeholder="New subject name..."
