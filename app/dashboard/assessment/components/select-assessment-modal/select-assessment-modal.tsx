@@ -27,7 +27,7 @@ export function SelectAssessmentModal({
 }: SelectAssessmentModalProps) {
   const [form] = Form.useForm<SelectAssessmentFormValues>();
   const router = useRouter();
-  const { data: examData } = useGetExamQuery(exam?._id ?? "", { skip: !open || !exam });
+  const { data: examData, isLoading: isLoadingExam } = useGetExamQuery(exam?._id ?? "", { skip: !open || !exam });
   const subjects: ExamSubject[] = examData?.data?.subjects ?? [];
 
   const subjectOptions = useMemo(
@@ -81,6 +81,7 @@ export function SelectAssessmentModal({
             options={subjectOptions}
             className="w-full"
             allowClear
+            loading={isLoadingExam}
           />
         </Form.Item>
         <Form.Item
