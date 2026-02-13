@@ -1,4 +1,4 @@
-import { BookOpen, House, Settings, ShieldCheck, Users, Users2 } from "lucide-react";
+import { BookOpen, ClipboardList, House, Settings, ShieldCheck, Users, Users2 } from "lucide-react";
 
 export interface MenuItem {
   icon?: React.ReactNode;
@@ -35,6 +35,11 @@ export const Menu: Menu = {
       icon: <BookOpen className="w-5 h-5" />,
       text: "Academics",
       page: "/dashboard/academics",
+    },
+    {
+      icon: <ClipboardList className="w-5 h-5" />,
+      text: "Assessment",
+      page: "/dashboard/assessment",
     },
     {
       icon: <ShieldCheck className="w-5 h-5" />,

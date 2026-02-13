@@ -63,6 +63,6 @@ const baseQueryWithErrorInterceptor = async (
 export const apiSetup = createApi({
   reducerPath: "apiSlice",
   baseQuery: baseQueryWithErrorInterceptor,
-  tagTypes: ["School", "Student", "Teacher", "AllowList", "Subject", "Exam"],
+  tagTypes: ["School", "Student", "Teacher", "AllowList", "Subject", "Exam", "Assessment"],
   endpoints: () => ({}),
 });
