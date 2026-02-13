@@ -1,3 +1,5 @@
+import { Subject } from "./subject.types";
+
 export interface ExamSubjectInputDto {
   subjectId: string;
   passMark: number;
@@ -12,7 +14,7 @@ export interface CreateExamDto {
 }
 
 export interface ExamSubject {
-  subjectId: string | { _id: string; name: string };
+  subjectId: Subject;
   passMark: number;
   maxMark: number;
 }
@@ -32,5 +34,10 @@ export interface CreateExamResponse {
 
 export interface GetExamsResponse {
   data: Exam[];
+  message?: string;
+}
+
+export interface GetExamResponse {
+  data: Exam | null;
   message?: string;
 }

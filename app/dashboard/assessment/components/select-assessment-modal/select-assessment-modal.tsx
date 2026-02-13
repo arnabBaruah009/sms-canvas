@@ -2,12 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { Button, Modal, Form, Select } from "antd";
-import { useGetSubjectsQuery } from "@/lib/apis/subjects.api";
 import { PrimaryButton } from "@/components/buttons/primary-button";
 import { CLASS_OPTIONS, SECTION_OPTIONS } from "../../constants/assessment.constants";
-import type { Exam } from "@/app/dashboard/academics/types/exam.types";
-import type { Subject } from "@/app/dashboard/academics/types/subject.types";
+import type { Exam, ExamSubject } from "@/app/dashboard/academics/types/exam.types";
 import { useMemo } from "react";
+import { useGetExamQuery } from "@/lib/apis/exams.api";
 
 export interface SelectAssessmentFormValues {
   subjectId: string;
@@ -28,11 +27,11 @@ export function SelectAssessmentModal({
 }: SelectAssessmentModalProps) {
   const [form] = Form.useForm<SelectAssessmentFormValues>();
   const router = useRouter();
-  const { data: subjectsData } = useGetSubjectsQuery(undefined, { skip: !open });
-  const subjects: Subject[] = subjectsData?.data ?? [];
+  const { data: examData } = useGetExamQuery(exam?._id ?? "", { skip: !open || !exam });
+  const subjects: ExamSubject[] = examData?.data?.subjects ?? [];
 
   const subjectOptions = useMemo(
-    () => subjects.map((s) => ({ value: s._id, label: s.name })),
+    () => subjects.map((s) => ({ value: s.subjectId._id, label: s.subjectId.name ?? "" })),
     [subjects]
   );
 
